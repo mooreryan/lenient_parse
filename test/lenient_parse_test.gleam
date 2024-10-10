@@ -58,7 +58,6 @@ pub fn to_float_whitespace_test() {
   |> should.equal(Ok(1.0))
 }
 
-// TODO: scientific notation
 // pub fn to_float_scientific_notation_test() {
 //   // "420e3"
 //   // |> lenient_parse.to_float
