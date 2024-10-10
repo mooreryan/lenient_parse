@@ -72,6 +72,3 @@ pub fn is_valid_number_string(text: String) -> Bool {
     Error(_) -> False
   }
 }
-// TODO: README
-// TODO: Publish
-// TODO: Support scientific notation
