@@ -1,5 +1,5 @@
 name = "lenient_parse"
-version = "1.0.0"
+version = "1.0.1"
 
 description = "Lenient Python-like parsing functions for Gleam."
 licences = ["Apache-2.0"]
