@@ -28,7 +28,12 @@ pub fn to_float(text: String) -> Result(Float, Nil) {
   use text <- result.try(text |> common_sanitize)
   use _ <- result.try_recover(text |> float.parse)
   use _ <- result.try_recover(text |> int.parse |> result.map(int.to_float))
-  text |> pad_leading_trailing_decimal |> result.try(float.parse)
+
+  case string.first(text), string.last(text) {
+    Ok("."), _ -> float.parse("0" <> text)
+    _, Ok(".") -> float.parse(text <> "0")
+    _, _ -> Error(Nil)
+  }
 }
 
 /// Converts a string to an integer using a more lenient parsing method than gleam's `int.parse()`.
@@ -56,14 +61,6 @@ fn common_sanitize(text: String) -> Result(String, Nil) {
   let text = text |> string.trim |> string.replace("_", "")
   use <- bool.guard(text |> string.is_empty, Error(Nil))
   text |> Ok
-}
-
-fn pad_leading_trailing_decimal(text: String) -> Result(String, Nil) {
-  case string.first(text), string.last(text) {
-    Ok("."), _ -> Ok("0" <> text)
-    _, Ok(".") -> Ok(text <> "0")
-    _, _ -> Error(Nil)
-  }
 }
 
 @internal
