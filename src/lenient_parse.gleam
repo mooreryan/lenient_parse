@@ -43,15 +43,15 @@ pub fn to_float(text: String) -> Result(Float, Nil) {
 /// ## Examples
 ///
 /// ```gleam
-/// lenient_parse.to_int("123")      // -> Ok(123)
-/// lenient_parse.to_int("+123")     // -> Ok(123)
-/// lenient_parse.to_int("-123")     // -> Ok(-123)
-/// lenient_parse.to_int("0123")     // -> Ok(123)
-/// lenient_parse.to_int(" 123 ")    // -> Ok(123)
-/// lenient_parse.to_int("1_000")    // -> Ok(1000)
-/// lenient_parse.to_int("")         // -> Error(Nil)
-/// lenient_parse.to_int("1.0")      // -> Error(Nil)
-/// lenient_parse.to_int("abc")      // -> Error(Nil)
+/// lenient_parse.to_int("123")   // -> Ok(123)
+/// lenient_parse.to_int("+123")  // -> Ok(123)
+/// lenient_parse.to_int("-123")  // -> Ok(-123)
+/// lenient_parse.to_int("0123")  // -> Ok(123)
+/// lenient_parse.to_int(" 123 ") // -> Ok(123)
+/// lenient_parse.to_int("1_000") // -> Ok(1000)
+/// lenient_parse.to_int("")      // -> Error(Nil)
+/// lenient_parse.to_int("1.0")   // -> Error(Nil)
+/// lenient_parse.to_int("abc")   // -> Error(Nil)
 /// ```
 pub fn to_int(text: String) -> Result(Int, Nil) {
   let text = text |> sanitize
