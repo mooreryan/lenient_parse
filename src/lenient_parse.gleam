@@ -25,7 +25,7 @@ import gleam/string
 /// lenient_parse.to_float("abc")      // -> Error(Nil)
 /// ```
 pub fn to_float(text: String) -> Result(Float, Nil) {
-  use text <- result.try(text |> sanitize)
+  use text <- result.try(text |> common_sanitize)
   use _ <- result.try_recover(text |> float.parse)
   use _ <- result.try_recover(text |> int.parse |> result.map(int.to_float))
 
@@ -53,10 +53,10 @@ pub fn to_float(text: String) -> Result(Float, Nil) {
 /// lenient_parse.to_int("abc")   // -> Error(Nil)
 /// ```
 pub fn to_int(text: String) -> Result(Int, Nil) {
-  text |> sanitize |> result.map(int.parse) |> result.flatten
+  text |> common_sanitize |> result.map(int.parse) |> result.flatten
 }
 
-fn sanitize(text: String) -> Result(String, Nil) {
+fn common_sanitize(text: String) -> Result(String, Nil) {
   use <- bool.guard(!is_valid_number_string(text), Error(Nil))
   let text = text |> string.trim |> string.replace("_", "")
   use <- bool.guard(text |> string.is_empty, Error(Nil))
