@@ -1,6 +1,7 @@
 import gleam/bool
 import gleam/float
 import gleam/int
+import gleam/regex
 import gleam/result
 import gleam/string
 
@@ -24,9 +25,7 @@ import gleam/string
 /// lenient_parse.to_float("abc")      // -> Error(Nil)
 /// ```
 pub fn to_float(text: String) -> Result(Float, Nil) {
-  let text = text |> sanitize
-
-  use <- bool.guard(text |> string.is_empty, Error(Nil))
+  use text <- result.try(text |> sanitize)
   use _ <- result.try_recover(text |> float.parse)
   use _ <- result.try_recover(text |> int.parse |> result.map(int.to_float))
 
@@ -54,13 +53,24 @@ pub fn to_float(text: String) -> Result(Float, Nil) {
 /// lenient_parse.to_int("abc")   // -> Error(Nil)
 /// ```
 pub fn to_int(text: String) -> Result(Int, Nil) {
-  let text = text |> sanitize
-  use <- bool.guard(text |> string.is_empty, Error(Nil))
-  text |> int.parse
+  text |> sanitize |> result.map(int.parse) |> result.flatten
 }
 
-fn sanitize(text: String) -> String {
-  text |> string.trim |> string.replace("_", "")
+fn sanitize(text: String) -> Result(String, Nil) {
+  use <- bool.guard(!is_valid_number_string(text), Error(Nil))
+  let text = text |> string.trim |> string.replace("_", "")
+  use <- bool.guard(text |> string.is_empty, Error(Nil))
+  text |> Ok
+}
+
+@internal
+pub fn is_valid_number_string(text: String) -> Bool {
+  let pattern = "^\\s*[+-]?(?!.*__)[0-9_]*(?<!_)\\.?(?!_)[0-9_]*(?<!_)\\s*$"
+
+  case regex.from_string(pattern) {
+    Ok(re) -> regex.check(with: re, content: text)
+    Error(_) -> False
+  }
 }
 // TODO: README
 // TODO: Publish
