@@ -36,7 +36,5 @@ pub fn to_float(text: String) -> Result(Float, Nil) {
   }
 }
 // TODO: README
-// TODO: GitHub repo description
-// TODO: gleam.toml
 // TODO: Publish
 // TODO: Support scientific notation
