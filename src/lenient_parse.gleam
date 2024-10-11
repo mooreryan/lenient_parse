@@ -29,10 +29,16 @@ pub fn to_float(text: String) -> Result(Float, Nil) {
   use _ <- result.try_recover(text |> float.parse)
   use _ <- result.try_recover(text |> int.parse |> result.map(int.to_float))
 
-  case string.first(text), string.last(text) {
-    Ok("."), _ -> float.parse("0" <> text)
-    _, Ok(".") -> float.parse(text <> "0")
-    _, _ -> Error(Nil)
+  let res = case string.first(text) {
+    Ok(".") -> float.parse("0" <> text)
+    _ -> Error(Nil)
+  }
+
+  use <- result.lazy_or(res)
+
+  case string.last(text) {
+    Ok(".") -> float.parse(text <> "0")
+    _ -> Error(Nil)
   }
 }
 
