@@ -71,7 +71,21 @@ fn common_sanitize(text: String) -> Result(String, Nil) {
 
 @internal
 pub fn is_valid_number_string(text: String) -> Bool {
-  let pattern = "^\\s*[+-]?(?!.*__)[0-9_]*(?<!_)\\.?(?!_)[0-9_]*(?<!_)\\s*$"
+  // ^        - Start of string
+  // \s*      - Optional whitespace at the beginning
+  // [+-]?    - Optional plus or minus sign
+  // (?!.*__) - Negative lookahead to prevent double underscores
+  // (?!_)    - Negative lookahead to prevent leading underscore
+  // [0-9_]*  - Zero or more digits or underscores
+  // (?<!_)   - Negative lookbehind to prevent trailing underscore before decimal point
+  // \.?      - Optional decimal point
+  // (?!_)    - Negative lookahead to prevent underscore immediately after decimal point
+  // [0-9_]*  - Zero or more digits or underscores after decimal point
+  // (?<!_)   - Negative lookbehind to prevent trailing underscore
+  // \s*      - Optional whitespace at the end
+  // $        - End of string
+  let pattern =
+    "^\\s*[+-]?(?!_)(?!.*__)[0-9_]*(?<!_)\\.?(?!_)[0-9_]*(?<!_)\\s*$"
 
   case regex.from_string(pattern) {
     Ok(re) -> regex.check(with: re, content: text)
