@@ -29,7 +29,7 @@ pub fn main() {
   // Ok(-123.321)
 
   "1_000_000.0" |> lenient_parse.to_float |> io.debug
-  // Ok(1000000.0)
+  // Ok(1.0e6)
 
   "123" |> lenient_parse.to_int |> io.debug
   // Ok(123)
