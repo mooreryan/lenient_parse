@@ -25,4 +25,5 @@ pub fn is_valid_number_string_false_test() {
   lenient_parse.is_valid_number_string("1000._0") |> should.equal(False)
   lenient_parse.is_valid_number_string("1000.0_") |> should.equal(False)
   lenient_parse.is_valid_number_string("_1000.0") |> should.equal(False)
+  lenient_parse.is_valid_number_string("_") |> should.equal(False)
 }

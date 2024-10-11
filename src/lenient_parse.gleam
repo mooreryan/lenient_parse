@@ -76,6 +76,7 @@ pub fn is_valid_number_string(text: String) -> Bool {
   // [+-]?    - Optional plus or minus sign
   // (?!.*__) - Negative lookahead to prevent double underscores
   // (?!_)    - Negative lookahead to prevent leading underscore
+  // (?!^\s*[+-]?_\s*$) - Negative lookahead to prevent just an underscore
   // [0-9_]*  - Zero or more digits or underscores
   // (?<!_)   - Negative lookbehind to prevent trailing underscore before decimal point
   // \.?      - Optional decimal point
@@ -85,7 +86,7 @@ pub fn is_valid_number_string(text: String) -> Bool {
   // \s*      - Optional whitespace at the end
   // $        - End of string
   let pattern =
-    "^\\s*[+-]?(?!_)(?!.*__)[0-9_]*(?<!_)\\.?(?!_)[0-9_]*(?<!_)\\s*$"
+    "^\\s*[+-]?(?!_)(?!.*__)(?!^\\s*[+-]?_\\s*$)[0-9_]*(?<!_)\\.?(?!_)[0-9_]*(?<!_)\\s*$"
 
   case regex.from_string(pattern) {
     Ok(re) -> regex.check(with: re, content: text)
