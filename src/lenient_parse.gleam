@@ -88,8 +88,8 @@ pub fn is_valid_number_string(text: String) -> Bool {
   let pattern =
     "^\\s*[+-]?(?!_)(?!.*__)(?!^\\s*[+-]?_\\s*$)[0-9_]*(?<!_)\\.?(?!_)[0-9_]*(?<!_)\\s*$"
 
-  case regex.from_string(pattern) {
-    Ok(re) -> regex.check(with: re, content: text)
-    Error(_) -> False
-  }
+  pattern
+  |> regex.from_string
+  |> result.map(regex.check(with: _, content: text))
+  |> result.unwrap(False)
 }
