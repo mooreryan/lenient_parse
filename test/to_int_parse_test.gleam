@@ -1,3 +1,7 @@
+import coerce.{
+  GleamIntParseError, InvalidCharacter, InvalidUnderscorePosition,
+  WhitespaceOnlyOrEmptyString,
+}
 import lenient_parse
 import startest/expect
 
@@ -34,7 +38,7 @@ pub fn to_int_underscores_test() {
 pub fn to_int_invalid_underscores_test() {
   "1_000__000"
   |> lenient_parse.to_int
-  |> expect.to_equal(Error(Nil))
+  |> expect.to_equal(Error(InvalidUnderscorePosition))
 }
 
 pub fn to_int_with_surrounding_whitespace_test() {
@@ -46,29 +50,29 @@ pub fn to_int_with_surrounding_whitespace_test() {
 pub fn to_int_with_decimal_point_test() {
   "1."
   |> lenient_parse.to_int
-  |> expect.to_equal(Error(Nil))
+  |> expect.to_equal(Error(GleamIntParseError))
 }
 
 pub fn to_int_with_decimal_number_test() {
   "1.0"
   |> lenient_parse.to_int
-  |> expect.to_equal(Error(Nil))
+  |> expect.to_equal(Error(GleamIntParseError))
 }
 
 pub fn to_int_with_only_whitespace_test() {
   " "
   |> lenient_parse.to_int
-  |> expect.to_equal(Error(Nil))
+  |> expect.to_equal(Error(WhitespaceOnlyOrEmptyString))
 }
 
 pub fn to_int_with_empty_string_test() {
   ""
   |> lenient_parse.to_int
-  |> expect.to_equal(Error(Nil))
+  |> expect.to_equal(Error(WhitespaceOnlyOrEmptyString))
 }
 
 pub fn to_int_with_non_numeric_string_test() {
   "abc"
   |> lenient_parse.to_int
-  |> expect.to_equal(Error(Nil))
+  |> expect.to_equal(Error(InvalidCharacter("a")))
 }
