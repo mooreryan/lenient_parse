@@ -22,6 +22,11 @@ pub type ParseError {
   /// the number string.
   InvalidDecimalPosition
 
+  /// Represents an error when a sign (+ or -) is in an invalid position within
+  /// the number string. The `String` parameter contains the sign that caused
+  /// the error.
+  SignAtInvalidPosition(String)
+
   /// Represents an error when Gleam's `float.parse` fails after custom parsing
   /// and coercion. Indicates the string couldn't be converted to a float even
   /// with more permissive rules.
@@ -34,11 +39,26 @@ pub type ParseError {
 }
 
 @internal
+pub fn parse_error_to_string(error: ParseError) -> String {
+  case error {
+    GleamIntParseError -> "GleamIntParseError"
+    InvalidCharacter(character) -> "InvalidCharacter(\"" <> character <> "\")"
+    InvalidUnderscorePosition -> "InvalidUnderscorePosition"
+    WhitespaceOnlyOrEmptyString -> "WhitespaceOnlyOrEmptyString"
+    GleamFloatParseError -> "GleamFloatParseError"
+    InvalidDecimalPosition -> "InvalidDecimalPosition"
+    SignAtInvalidPosition(character) ->
+      "SignAtInvalidPosition(\"" <> character <> "\")"
+  }
+}
+
+@internal
 pub fn coerce_into_valid_number_string(
   text: String,
 ) -> Result(String, ParseError) {
   let text = text |> string.trim
   use <- bool.guard(text |> string.is_empty, Error(WhitespaceOnlyOrEmptyString))
+  use _ <- result.try(text |> has_valid_sign_position())
   use _ <- result.try(text |> has_valid_characters())
   use text <- result.try(text |> coerce_into_valid_underscore_string)
   text |> coerce_into_valid_decimal_string
@@ -64,8 +84,7 @@ fn valid_character_set() -> Set(String) {
   digits |> set.union(signs) |> set.union(separators)
 }
 
-@internal
-pub fn coerce_into_valid_underscore_string(
+fn coerce_into_valid_underscore_string(
   text: String,
 ) -> Result(String, ParseError) {
   text
@@ -125,8 +144,7 @@ fn do_coerce_into_valid_underscore_string(
   }
 }
 
-@internal
-pub fn has_valid_characters(text: String) -> Result(Nil, ParseError) {
+fn has_valid_characters(text: String) -> Result(Nil, ParseError) {
   let graphemes = text |> string.to_graphemes
   list.try_map(graphemes, fn(grapheme) {
     case valid_character_set() |> set.contains(grapheme) {
@@ -137,10 +155,26 @@ pub fn has_valid_characters(text: String) -> Result(Nil, ParseError) {
   |> result.replace(Nil)
 }
 
-@internal
-pub fn coerce_into_valid_decimal_string(
-  text: String,
-) -> Result(String, ParseError) {
+fn has_valid_sign_position(text: String) -> Result(Nil, ParseError) {
+  do_has_valid_sign_position(text |> string.to_graphemes, 0)
+}
+
+fn do_has_valid_sign_position(
+  characters: List(String),
+  index index: Int,
+) -> Result(Nil, ParseError) {
+  case characters {
+    [] -> Ok(Nil)
+    [first, ..rest] -> {
+      case first {
+        "+" | "-" if index != 0 -> Error(SignAtInvalidPosition(first))
+        _ -> do_has_valid_sign_position(rest, index + 1)
+      }
+    }
+  }
+}
+
+fn coerce_into_valid_decimal_string(text: String) -> Result(String, ParseError) {
   let text_length = text |> string.length
 
   text
