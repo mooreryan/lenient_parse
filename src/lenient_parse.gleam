@@ -31,8 +31,8 @@ pub fn to_float(text: String) -> Result(Float, ParseError) {
 
   text
   |> int.parse
-  |> result.replace_error(GleamIntParseError)
   |> result.map(int.to_float)
+  |> result.replace_error(GleamIntParseError)
 }
 
 /// Converts a string to an integer using a more lenient parsing method than gleam's `int.parse()`.
