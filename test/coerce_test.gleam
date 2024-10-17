@@ -39,71 +39,33 @@ pub fn coerce_into_valid_number_string_tests() {
         }),
     ),
     describe(
-      "is_invalid_empty_or_whitespace_only_string",
-      ["", " ", "\t", "\n", "\r", "\f", " \t\n\r\f "]
-        |> list.map(fn(text) {
-          let printable_text = text |> into_printable_text
-
-          use <- it("\"" <> printable_text <> "\"")
-
-          text
-          |> coerce_into_valid_number_string
-          |> expect.to_equal(Error(WhitespaceOnlyOrEmptyString))
-        }),
-    ),
-    describe(
-      "has_invalid_character",
-      [#("a", "a"), #("1b1", "b"), #("100.00c01", "c"), #("1 1", " ")]
-        |> list.map(fn(pair) {
-          let #(input, invalid_character) = pair
-          use <- it("\"" <> invalid_character <> "\" in \"" <> input <> "\"")
-
-          input
-          |> coerce_into_valid_number_string
-          |> expect.to_equal(Error(InvalidCharacter(invalid_character)))
-        }),
-    ),
-    describe(
-      "has_invalid_sign_position",
-      [#("1+", "+"), #("1-", "-"), #("1+1", "+"), #("1-1", "-")]
-        |> list.map(fn(pair) {
-          let #(input, sign_at_invalid_position) = pair
-          use <- it(
-            "\"" <> sign_at_invalid_position <> "\" in \"" <> input <> "\"",
-          )
-
-          input
-          |> coerce_into_valid_number_string
-          |> expect.to_equal(
-            Error(SignAtInvalidPosition(sign_at_invalid_position)),
-          )
-        }),
-    ),
-    describe(
-      "has_invalid_decimal_position",
-      [".", "..", "0.0.", ".0.0"]
-        |> list.map(fn(text) {
-          use <- it("\"" <> text <> "\"")
-          text
-          |> coerce_into_valid_number_string
-          |> expect.to_equal(Error(InvalidDecimalPosition))
-        }),
-    ),
-    describe(
-      "has_invalid_underscore_position",
+      "should_not_coerce",
       [
-        "_", "_1000", "1000_", "+_1000", "-_1000", "1__000", "1_.000", "1._000",
-        "_1000.0", "1000.0_", "1000._0", "1000_.0", "1000_.",
+        ["", " ", "\t", "\n", "\r", "\f", " \t\n\r\f "]
+          |> list.map(fn(value) { #(value, WhitespaceOnlyOrEmptyString) }),
+        [
+          "_", "_1000", "1000_", "+_1000", "-_1000", "1__000", "1_.000",
+          "1._000", "_1000.0", "1000.0_", "1000._0", "1000_.0", "1000_.",
+        ]
+          |> list.map(fn(value) { #(value, InvalidUnderscorePosition) }),
+        [#("a", "a"), #("1b1", "b"), #("100.00c01", "c"), #("1 1", " ")]
+          |> list.map(fn(pair) { #(pair.0, InvalidCharacter(pair.1)) }),
+        [#("1+", "+"), #("1-", "-"), #("1+1", "+"), #("1-1", "-")]
+          |> list.map(fn(pair) { #(pair.0, SignAtInvalidPosition(pair.1)) }),
+        [".", "..", "0.0.", ".0.0"]
+          |> list.map(fn(value) { #(value, InvalidDecimalPosition) }),
       ]
-        |> list.map(fn(text) {
-          let error = InvalidUnderscorePosition
+        |> list.concat
+        |> list.map(fn(pair) {
+          let #(input, error) = pair
+          let printable_text = input |> into_printable_text
           let error_text = error |> parse_error.to_string
 
-          use <- it("\"" <> text <> "\" -> " <> error_text)
+          use <- it("\"" <> printable_text <> "\" -> " <> error_text)
 
-          text
+          input
           |> coerce_into_valid_number_string
-          |> expect.to_equal(Error(InvalidUnderscorePosition))
+          |> expect.to_equal(Error(error))
         }),
     ),
   ])
