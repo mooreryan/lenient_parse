@@ -39,7 +39,7 @@ pub fn coerce_into_valid_number_string_tests() {
         }),
     ),
     describe(
-      "has_invalid_whitespace",
+      "is_invalid_empty_or_whitespace_only_string",
       ["", " ", "\t", "\n", "\r", "\f", " \t\n\r\f "]
         |> list.map(fn(text) {
           let printable_text = text |> into_printable_text
