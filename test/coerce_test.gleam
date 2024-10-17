@@ -1,5 +1,5 @@
 import gleam/list
-import helpers.{into_printable_text}
+import helpers.{to_printable_text}
 import lenient_parse/internal/coerce.{coerce_into_valid_number_string}
 import parse_error.{
   InvalidCharacter, InvalidDecimalPosition, InvalidUnderscorePosition,
@@ -58,7 +58,7 @@ pub fn coerce_into_valid_number_string_tests() {
         |> list.concat
         |> list.map(fn(pair) {
           let #(input, error) = pair
-          let printable_text = input |> into_printable_text
+          let printable_text = input |> to_printable_text
           let error_text = error |> parse_error.to_string
 
           use <- it("\"" <> printable_text <> "\" -> " <> error_text)

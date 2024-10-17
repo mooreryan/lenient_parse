@@ -1,9 +1,9 @@
 import gleam/list
-import helpers.{into_printable_text}
+import helpers.{to_printable_text}
 import startest.{describe, it}
 import startest/expect
 
-pub fn into_printable_text_tests() {
+pub fn to_printable_text_tests() {
   describe(
     "should_be_printable_text",
     [
@@ -16,7 +16,7 @@ pub fn into_printable_text_tests() {
       |> list.map(fn(pair) {
         let #(input, output) = pair
         use <- it("\"" <> output <> "\"")
-        input |> into_printable_text |> expect.to_equal(output)
+        input |> to_printable_text |> expect.to_equal(output)
       }),
   )
 }

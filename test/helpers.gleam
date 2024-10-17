@@ -3,11 +3,11 @@ import gleam/string
 // TODO: Make this whole file internal
 
 @internal
-pub fn into_printable_text(text: String) -> String {
-  do_into_printable_text(text |> string.to_graphemes, "")
+pub fn to_printable_text(text: String) -> String {
+  do_to_printable_text(text |> string.to_graphemes, "")
 }
 
-fn do_into_printable_text(characters: List(String), acc: String) -> String {
+fn do_to_printable_text(characters: List(String), acc: String) -> String {
   case characters {
     [] -> acc
     [first, ..rest] -> {
@@ -18,7 +18,7 @@ fn do_into_printable_text(characters: List(String), acc: String) -> String {
         "\f" -> "\\f"
         _ -> first
       }
-      do_into_printable_text(rest, acc <> printable)
+      do_to_printable_text(rest, acc <> printable)
     }
   }
 }
