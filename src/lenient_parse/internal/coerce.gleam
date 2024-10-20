@@ -20,29 +20,40 @@ pub type ParseState {
     previous: Option(Token),
     text_length: Int,
     tracker: WhitespaceBlockTracker,
+    allow_float: Bool,
     seen_decimal: Bool,
     seen_digit: Bool,
     acc: String,
   )
 }
 
-pub fn coerce_into_valid_number_string(
-  text: String,
-) -> Result(String, ParseError) {
+fn new(text: String, allow_float: Bool) -> ParseState {
   State(
     tokens: text |> tokenizer.tokenize_number_string,
     index: 0,
     previous: None,
     text_length: text |> string.length,
     tracker: whitespace_block_tracker.new(),
+    allow_float: allow_float,
     seen_decimal: False,
     seen_digit: False,
     acc: "",
   )
-  |> do_coerce_into_valid_number_string
 }
 
-fn do_coerce_into_valid_number_string(
+pub fn coerce_into_float_string(text: String) -> Result(String, ParseError) {
+  text
+  |> new(True)
+  |> coerce_into_valid_number_string
+}
+
+pub fn coerce_into_int_string(text: String) -> Result(String, ParseError) {
+  text
+  |> new(False)
+  |> coerce_into_valid_number_string
+}
+
+fn coerce_into_valid_number_string(
   state: ParseState,
 ) -> Result(String, ParseError) {
   let at_beginning = state.index == 0
@@ -72,6 +83,8 @@ fn do_coerce_into_valid_number_string(
           Error(InvalidUnderscorePosition(state.index - 1))
         Underscore -> Ok(state)
         DecimalPoint if state.text_length == 1 || state.seen_decimal ->
+          Error(InvalidDecimalPosition(state.index))
+        DecimalPoint if !state.allow_float ->
           Error(InvalidDecimalPosition(state.index))
         DecimalPoint if at_beginning ->
           Ok(State(..state, seen_decimal: True, acc: "0" <> "." <> state.acc))
@@ -108,7 +121,7 @@ fn do_coerce_into_valid_number_string(
             index: state.index + 1,
             tracker: tracker,
           )
-          |> do_coerce_into_valid_number_string
+          |> coerce_into_valid_number_string
         }
       }
     }
