@@ -1,13 +1,6 @@
 import gleam/int
 
 pub type ParseError {
-  /// Represents an error when an invalid character is encountered during
-  /// parsing.
-  ///
-  /// - `character`: The invalid character as a `String`.
-  /// - `index`: The position of the invalid character in the input string.
-  InvalidCharacter(character: String, index: Int)
-
   /// Represents an error when the input string is empty.
   EmptyString
 
@@ -33,6 +26,13 @@ pub type ParseError {
   /// - `character`: The sign character that caused the error as a `String`.
   /// - `index`: The position of the invalid sign in the input string.
   InvalidSignPosition(character: String, index: Int)
+
+  /// Represents an error when an invalid character is encountered during
+  /// parsing.
+  ///
+  /// - `character`: The invalid character as a `String`.
+  /// - `index`: The position of the invalid character in the input string.
+  InvalidCharacter(character: String, index: Int)
 
   /// Represents an error when Gleam's `float.parse` fails after custom parsing
   /// and coercion.
