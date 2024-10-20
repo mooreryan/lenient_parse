@@ -7,6 +7,7 @@ import lenient_parse/internal/tokenizer.{
 import lenient_parse/internal/whitespace_block_tracker.{
   type WhitespaceBlockTracker,
 }
+
 import parse_error.{
   type ParseError, EmptyString, InvalidCharacter, InvalidDecimalPosition,
   InvalidSignPosition, InvalidUnderscorePosition, WhitespaceOnlyString,
