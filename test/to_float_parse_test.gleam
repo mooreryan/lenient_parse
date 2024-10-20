@@ -26,12 +26,12 @@ pub fn coerce_into_valid_number_string_tests() {
       "should_not_coerce",
       [
         test_data.invalid_float_assortment,
-        test_data.invalid_underscore_floats
+        test_data.invalid_underscore_position_floats
           |> list.map(fn(tuple) {
             let #(input, index) = tuple
             #(input, InvalidUnderscorePosition(index))
           }),
-        test_data.invalid_character_floats
+        test_data.invalid_character_position_floats
           |> list.map(fn(tuple) {
             let #(input, invalid_character, index) = tuple
             #(input, InvalidCharacter(invalid_character, index))

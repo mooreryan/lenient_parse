@@ -15,6 +15,6 @@ pub fn to_int_python_test() {
   test_data.valid_int_strings()
   |> list.each(fn(text) { text |> python_parse.to_int |> expect.to_be_ok })
 
-  test_data.int_should_not_coerce_strings()
+  test_data.invalid_int_strings()
   |> list.each(fn(text) { text |> python_parse.to_int |> expect.to_be_error })
 }

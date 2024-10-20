@@ -32,17 +32,17 @@ pub const invalid_float_assortment = [
   #("abc", InvalidCharacter("a", 0)),
 ]
 
-pub const invalid_underscore_floats = [
+pub const invalid_underscore_position_floats = [
   #("1_.000", 1), #("1._000", 2), #("_1000.0", 0), #("1000.0_", 6),
   #("1000._0", 5), #("1000_.0", 4), #("1000_.", 4),
 ]
 
-pub const invalid_character_floats = [#("100.00c01", "c", 6)]
+pub const invalid_character_position_floats = [#("100.00c01", "c", 6)]
 
 pub fn invalid_float_strings() -> List(String) {
   let a = invalid_float_assortment |> list.map(fn(a) { a.0 })
-  let b = invalid_underscore_floats |> list.map(fn(a) { a.0 })
-  let c = invalid_character_floats |> list.map(fn(a) { a.0 })
+  let b = invalid_underscore_position_floats |> list.map(fn(a) { a.0 })
+  let c = invalid_character_position_floats |> list.map(fn(a) { a.0 })
   [a, b, c] |> list.flatten
 }
 
@@ -76,7 +76,7 @@ pub const invalid_underscore_position_ints = [
   #("+_1000", 1), #("-_1000", 1), #("1__000", 2),
 ]
 
-pub const invalid_character_ints = [
+pub const invalid_character_position_ints = [
   #("a", "a", 0), #("1b1", "b", 1), #("+ 1", " ", 1), #("1 1", " ", 1),
   #(" 12 34 ", " ", 3),
 ]
@@ -89,10 +89,10 @@ pub const invalid_decimal_position_ints = [
   #(".", 0), #("..", 0), #("0.0.", 1), #(".0.0", 0),
 ]
 
-pub fn int_should_not_coerce_strings() -> List(String) {
+pub fn invalid_int_strings() -> List(String) {
   let a = invalid_int_assortment |> list.map(fn(a) { a.0 })
   let b = invalid_underscore_position_ints |> list.map(fn(a) { a.0 })
-  let c = invalid_character_ints |> list.map(fn(a) { a.0 })
+  let c = invalid_character_position_ints |> list.map(fn(a) { a.0 })
   let d = invalid_sign_position_ints |> list.map(fn(a) { a.0 })
   let e = invalid_decimal_position_ints |> list.map(fn(a) { a.0 })
   [a, b, c, d, e] |> list.flatten

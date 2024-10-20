@@ -34,7 +34,7 @@ pub fn coerce_into_valid_number_string_tests() {
             let #(input, index) = tuple
             #(input, InvalidUnderscorePosition(index))
           }),
-        test_data.invalid_character_ints
+        test_data.invalid_character_position_ints
           |> list.map(fn(tuple) {
             let #(input, invalid_character, index) = tuple
             #(input, InvalidCharacter(invalid_character, index))
