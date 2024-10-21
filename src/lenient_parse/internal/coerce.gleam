@@ -82,9 +82,9 @@ fn coerce_into_valid_number_string(
         _ if previous_is_underscore ->
           Error(InvalidUnderscorePosition(state.index - 1))
         Underscore -> Ok(state)
-        DecimalPoint if state.text_length == 1 || state.seen_decimal ->
-          Error(InvalidDecimalPosition(state.index))
         DecimalPoint if !state.allow_float ->
+          Error(InvalidDecimalPosition(state.index))
+        DecimalPoint if state.text_length == 1 || state.seen_decimal ->
           Error(InvalidDecimalPosition(state.index))
         DecimalPoint if at_beginning ->
           Ok(State(..state, seen_decimal: True, acc: "0" <> "." <> state.acc))
