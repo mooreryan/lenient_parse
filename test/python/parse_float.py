@@ -1,5 +1,5 @@
 import sys
 
-value = sys.argv[1]
-parsed_value = float(value)
-print(parsed_value, end="")
+text = sys.argv[1]
+parsed_float = float(text)
+print(parsed_float, end="")

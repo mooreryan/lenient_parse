@@ -1,5 +1,5 @@
 import sys
 
-value = sys.argv[1]
-parsed_value = int(value)
-print(parsed_value, end="")
+text = sys.argv[1]
+parsed_int = int(text)
+print(parsed_int, end="")
