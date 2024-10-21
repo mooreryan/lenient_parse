@@ -27,7 +27,7 @@ pub type ParseState {
   )
 }
 
-fn new(text: String, allow_float: Bool) -> ParseState {
+fn new(text: String, allow_float allow_float: Bool) -> ParseState {
   State(
     tokens: text |> tokenizer.tokenize_number_string,
     index: 0,
@@ -43,13 +43,13 @@ fn new(text: String, allow_float: Bool) -> ParseState {
 
 pub fn coerce_into_float_string(text: String) -> Result(String, ParseError) {
   text
-  |> new(True)
+  |> new(allow_float: True)
   |> coerce_into_valid_number_string
 }
 
 pub fn coerce_into_int_string(text: String) -> Result(String, ParseError) {
   text
-  |> new(False)
+  |> new(allow_float: False)
   |> coerce_into_valid_number_string
 }
 
