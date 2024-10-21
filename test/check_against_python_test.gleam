@@ -1,20 +1,51 @@
 import gleam/list
+import helpers
 import python/python_parse
+import shared_test_data
+import startest.{describe, it}
 import startest/expect
-import test_data
 
-pub fn to_float_python_test() {
-  test_data.valid_float_strings()
-  |> list.each(fn(text) { text |> python_parse.to_float |> expect.to_be_ok })
+pub fn check_against_python_tests() {
+  describe("check_against_python_tests", [
+    describe(
+      "expect_float_to_parse",
+      shared_test_data.valid_float_strings()
+        |> list.map(fn(input) {
+          let printable_text = input |> helpers.to_printable_text
+          use <- it("\"" <> printable_text <> "\"")
 
-  test_data.invalid_float_strings()
-  |> list.each(fn(text) { text |> python_parse.to_float |> expect.to_be_error })
-}
+          input |> python_parse.to_float |> expect.to_be_ok
+        }),
+    ),
+    describe(
+      "expect_float_to_not_parse",
+      shared_test_data.invalid_float_strings()
+        |> list.map(fn(input) {
+          let printable_text = input |> helpers.to_printable_text
+          use <- it("\"" <> printable_text <> "\"")
 
-pub fn to_int_python_test() {
-  test_data.valid_int_strings()
-  |> list.each(fn(text) { text |> python_parse.to_int |> expect.to_be_ok })
+          input |> python_parse.to_float |> expect.to_be_error
+        }),
+    ),
+    describe(
+      "expect_int_to_parse",
+      shared_test_data.valid_int_strings()
+        |> list.map(fn(input) {
+          let printable_text = input |> helpers.to_printable_text
+          use <- it("\"" <> printable_text <> "\"")
 
-  test_data.invalid_int_strings()
-  |> list.each(fn(text) { text |> python_parse.to_int |> expect.to_be_error })
+          input |> python_parse.to_int |> expect.to_be_ok
+        }),
+    ),
+    describe(
+      "expect_int_to_not_parse",
+      shared_test_data.invalid_int_strings()
+        |> list.map(fn(input) {
+          let printable_text = input |> helpers.to_printable_text
+          use <- it("\"" <> printable_text <> "\"")
+
+          input |> python_parse.to_int |> expect.to_be_error
+        }),
+    ),
+  ])
 }
