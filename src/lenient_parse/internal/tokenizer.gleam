@@ -10,14 +10,11 @@ pub type Token {
   Unknown(String)
 }
 
-pub fn tokenize_number_string(text: String) -> List(Token) {
-  text |> string.to_graphemes |> do_tokenize_number_string([])
+pub fn tokenize_string(text: String) -> List(Token) {
+  text |> string.to_graphemes |> do_tokenize_string([])
 }
 
-fn do_tokenize_number_string(
-  characters: List(String),
-  acc: List(Token),
-) -> List(Token) {
+fn do_tokenize_string(characters: List(String), acc: List(Token)) -> List(Token) {
   case characters {
     [] -> acc |> list.reverse
     [first, ..rest] -> {
@@ -31,7 +28,7 @@ fn do_tokenize_number_string(
         _ -> Unknown(first)
       }
 
-      do_tokenize_number_string(rest, [token, ..acc])
+      do_tokenize_string(rest, [token, ..acc])
     }
   }
 }

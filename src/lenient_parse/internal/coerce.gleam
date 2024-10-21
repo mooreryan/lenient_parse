@@ -29,7 +29,7 @@ pub type ParseState {
 
 fn new(text: String, allow_float allow_float: Bool) -> ParseState {
   State(
-    tokens: text |> tokenizer.tokenize_number_string,
+    tokens: text |> tokenizer.tokenize_string,
     index: 0,
     previous: None,
     text_length: text |> string.length,
