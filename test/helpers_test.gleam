@@ -11,7 +11,9 @@ pub fn to_printable_text_tests() {
       #("\n", "\\n"),
       #("\r", "\\r"),
       #("\f", "\\f"),
+      #("\r\n", "\\r\\n"),
       #("\t\nabc123\r", "\\t\\nabc123\\r"),
+      #("abc123\r\n", "abc123\\r\\n"),
     ]
       |> list.map(fn(tuple) {
         let #(input, output) = tuple
