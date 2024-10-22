@@ -1,5 +1,8 @@
+import gleam/float
+import gleam/int
 import gleam/list
 import helpers
+import parse_error
 import python/python_parse
 import shared_test_data
 import startest.{describe, it}
@@ -8,44 +11,110 @@ import startest/expect
 pub fn check_against_python_tests() {
   describe("check_against_python_tests", [
     describe(
-      "expect_float_to_parse",
-      shared_test_data.valid_float_strings()
-        |> list.map(fn(input) {
-          let printable_text = input |> helpers.to_printable_text
-          use <- it("\"" <> printable_text <> "\"")
+      "python_float_test",
+      shared_test_data.float_data
+        |> list.map(fn(test_data) {
+          let input = test_data.input
+          let input_printable_text = input |> helpers.to_printable_text
+          let output = test_data.output
+          let python_output = test_data.python_output
 
-          input |> python_parse.to_float |> expect.to_be_ok
+          let message = case output, python_output {
+            Ok(_), Ok(python_output) -> {
+              "should_coerce: \""
+              <> input_printable_text
+              <> "\" -> \""
+              <> python_output
+              <> "\""
+            }
+            Error(_), Error(_) -> {
+              "should_not_coerce: \""
+              <> input_printable_text
+              <> "\" -> \"Error\""
+            }
+            Ok(output), Error(_) -> {
+              panic as form_panic_message(
+                input_printable_text,
+                output |> float.to_string,
+                "Error",
+              )
+            }
+            Error(output), Ok(python_output) -> {
+              panic as form_panic_message(
+                input_printable_text,
+                output |> parse_error.to_string,
+                python_output,
+              )
+            }
+          }
+
+          use <- it(message)
+
+          input
+          |> python_parse.to_float
+          |> expect.to_equal(python_output)
         }),
     ),
     describe(
-      "expect_float_to_not_parse",
-      shared_test_data.invalid_float_strings()
-        |> list.map(fn(input) {
-          let printable_text = input |> helpers.to_printable_text
-          use <- it("\"" <> printable_text <> "\"")
+      "python_int_test",
+      shared_test_data.int_data
+        |> list.map(fn(test_data) {
+          let input = test_data.input
+          let input_printable_text = input |> helpers.to_printable_text
+          let output = test_data.output
+          let python_output = test_data.python_output
 
-          input |> python_parse.to_float |> expect.to_be_error
-        }),
-    ),
-    describe(
-      "expect_int_to_parse",
-      shared_test_data.valid_int_strings()
-        |> list.map(fn(input) {
-          let printable_text = input |> helpers.to_printable_text
-          use <- it("\"" <> printable_text <> "\"")
+          let message = case output, python_output {
+            Ok(_), Ok(python_output) -> {
+              "should_coerce: \""
+              <> input_printable_text
+              <> "\" -> \""
+              <> python_output
+              <> "\""
+            }
+            Error(_), Error(_) -> {
+              "should_not_coerce: \""
+              <> input_printable_text
+              <> "\" -> \"Error\""
+            }
+            Ok(output), Error(_) -> {
+              panic as form_panic_message(
+                input_printable_text,
+                output |> int.to_string,
+                "Error",
+              )
+            }
+            Error(output), Ok(python_output) -> {
+              panic as form_panic_message(
+                input_printable_text,
+                output |> parse_error.to_string,
+                python_output,
+              )
+            }
+          }
 
-          input |> python_parse.to_int |> expect.to_be_ok
-        }),
-    ),
-    describe(
-      "expect_int_to_not_parse",
-      shared_test_data.invalid_int_strings()
-        |> list.map(fn(input) {
-          let printable_text = input |> helpers.to_printable_text
-          use <- it("\"" <> printable_text <> "\"")
+          use <- it(message)
 
-          input |> python_parse.to_int |> expect.to_be_error
+          input
+          |> python_parse.to_int
+          |> expect.to_equal(python_output)
         }),
     ),
   ])
+}
+
+fn form_panic_message(
+  input: String,
+  output: String,
+  python_output: String,
+) -> String {
+  "Invalid test data configuration."
+  <> " Test data for both our's and Python's coerce methods should both expect"
+  <> " to either succeed or fail for the same input.\n"
+  <> "Input: "
+  <> input
+  <> ", Output: "
+  <> output
+  <> ", Python Output: "
+  <> python_output
 }
