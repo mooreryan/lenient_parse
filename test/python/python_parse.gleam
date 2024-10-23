@@ -2,14 +2,14 @@ import gleam/result
 import shellout
 
 pub fn to_float(text: String) -> Result(String, Nil) {
-  text |> coerce("./test/python/parse_float.py")
+  text |> coerce("float")
 }
 
 pub fn to_int(text: String) -> Result(String, Nil) {
-  text |> coerce("./test/python/parse_int.py")
+  text |> coerce("int")
 }
 
-fn coerce(text: String, program_path: String) -> Result(String, Nil) {
+fn coerce(text: String, parse_function_name: String) -> Result(String, Nil) {
   shellout.command(
     run: "uv",
     with: [
@@ -17,7 +17,8 @@ fn coerce(text: String, program_path: String) -> Result(String, Nil) {
       "-p",
       "3.13",
       "python",
-      program_path,
+      "./test/python/parse.py",
+      parse_function_name,
       text,
       ..shellout.arguments()
     ],
