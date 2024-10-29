@@ -19,8 +19,8 @@ pub fn mark(
 ) -> WhitespaceBlockTracker {
   let state = case token, tracker.state % 2 == 0 {
     Whitespace(_), True -> tracker.state
-    Whitespace(_), False -> tracker.state |> int.bitwise_shift_left(1)
-    _, True -> { tracker.state |> int.bitwise_shift_left(1) } + 1
+    Whitespace(_), False -> tracker.state * 2
+    _, True -> tracker.state * 2 + 1
     _, False -> tracker.state
   }
 
