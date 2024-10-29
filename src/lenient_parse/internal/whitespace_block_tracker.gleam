@@ -17,7 +17,7 @@ pub fn mark(
   tracker: WhitespaceBlockTracker,
   token: Token,
 ) -> WhitespaceBlockTracker {
-  let state = case token, tracker.state % 2 == 0 {
+  let state = case token, tracker.state |> int.is_even {
     Whitespace(_), True -> tracker.state
     Whitespace(_), False -> tracker.state * 2
     _, True -> tracker.state * 2 + 1
