@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.3.0 - xxx
+
+Breaking changes:
+    - `InvalidCharacter` has been renamed to `UnknownCharacter`.
+    - A new `InvalidDigitPosition` error has been introduced.
+
 ## v1.2.0 - 2024-10-20
 
 - Fixed bugs.
