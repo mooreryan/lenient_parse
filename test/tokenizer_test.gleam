@@ -1,6 +1,7 @@
-import lenient_parse/internal/tokenizer.{
-  DecimalPoint, Digit, Sign, Underscore, Unknown, Whitespace, tokenize,
+import lenient_parse/internal/token.{
+  DecimalPoint, Digit, Sign, Underscore, Unknown, Whitespace,
 }
+import lenient_parse/internal/tokenizer.{tokenize}
 import startest/expect
 
 pub fn tokenize_test() {

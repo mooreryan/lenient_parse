@@ -1,18 +1,7 @@
-import gleam/int
 import gleam/list
 import gleam/string
-import parse_error.{
-  type ParseError, InvalidDecimalPosition, InvalidDigitPosition,
-  InvalidSignPosition, InvalidUnderscorePosition, UnknownCharacter,
-}
-
-pub type Token {
-  Sign(Bool)
-  Digit(Int)
-  Underscore
-  DecimalPoint
-  Whitespace(String)
-  Unknown(String)
+import lenient_parse/internal/token.{
+  type Token, DecimalPoint, Digit, Sign, Underscore, Unknown, Whitespace,
 }
 
 pub fn tokenize(text: String) -> List(Token) {
@@ -44,20 +33,5 @@ fn do_tokenize(characters: List(String), acc: List(Token)) -> List(Token) {
 
       do_tokenize(rest, [token, ..acc])
     }
-  }
-}
-
-pub fn to_error(token: Token, index) -> ParseError {
-  case token {
-    Digit(digit) -> {
-      let digit = digit |> int.to_string
-      InvalidDigitPosition(digit, index)
-    }
-    Sign(True) -> InvalidSignPosition("+", index)
-    Sign(False) -> InvalidSignPosition("-", index)
-    Underscore -> InvalidUnderscorePosition(index)
-    Unknown(character) -> UnknownCharacter(character, index)
-    Whitespace(whitespace) -> UnknownCharacter(whitespace, index)
-    DecimalPoint -> InvalidDecimalPosition(index)
   }
 }

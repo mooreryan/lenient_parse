@@ -3,9 +3,10 @@ import gleam/int
 import gleam/list
 import gleam/option.{type Option, None, Some}
 import gleam/result
-import lenient_parse/internal/tokenizer.{
+import lenient_parse/internal/token.{
   type Token, DecimalPoint, Digit, Sign, Underscore, Unknown, Whitespace,
 }
+import lenient_parse/internal/tokenizer
 import parse_error.{
   type ParseError, EmptyString, InvalidDecimalPosition,
   InvalidUnderscorePosition, UnknownCharacter, WhitespaceOnlyString,
@@ -22,13 +23,13 @@ pub fn parse_float(input: String) -> Result(Float, ParseError) {
   let sign_result = parse_sign(tokens, index)
   use #(is_positive, tokens, index) <- result.try(sign_result)
 
-  let whole_digit_result = parse_digit(tokens, 0, index, index, 0)
+  let whole_digit_result = parse_digit(tokens, 0, index, True, 0)
   use #(whole_digit, _, tokens, index) <- result.try(whole_digit_result)
 
   let decimal_result = parse_decimal_point(tokens, index)
   use #(decimal_specified, tokens, index) <- result.try(decimal_result)
 
-  let fractional_digit_result = parse_digit(tokens, 0, index, index, 0)
+  let fractional_digit_result = parse_digit(tokens, 0, index, True, 0)
   use #(fractional_digit, fractional_digit_length, tokens, index) <- result.try(
     fractional_digit_result,
   )
@@ -37,7 +38,7 @@ pub fn parse_float(input: String) -> Result(Float, ParseError) {
   use #(_, tokens, index) <- result.try(post_whitespace_result)
 
   case tokens |> list.first {
-    Ok(token) -> Error(tokenizer.to_error(token, index))
+    Ok(token) -> Error(token.to_error(token, index))
     _ -> {
       case whole_digit, fractional_digit {
         Some(whole), Some(fractional) ->
@@ -75,14 +76,14 @@ pub fn parse_int(input: String) -> Result(Int, ParseError) {
   let sign_result = parse_sign(tokens, index)
   use #(is_positive, tokens, index) <- result.try(sign_result)
 
-  let digit_result = parse_digit(tokens, 0, index, index, 0)
+  let digit_result = parse_digit(tokens, 0, index, True, 0)
   use #(digit, _, tokens, index) <- result.try(digit_result)
 
   let post_whitespace_result = parse_whitespace(tokens, empty_string, index)
   use #(_, tokens, index) <- result.try(post_whitespace_result)
 
   case tokens |> list.first {
-    Ok(token) -> Error(tokenizer.to_error(token, index))
+    Ok(token) -> Error(token.to_error(token, index))
     _ -> {
       case leading_whitespace, digit {
         Some(_), Some(digit) | None, Some(digit) ->
@@ -160,11 +161,9 @@ fn parse_digit(
   tokens: List(Token),
   acc: Int,
   index: Int,
-  beginning_index: Int,
+  at_beginning: Bool,
   digit_length: Int,
 ) -> Result(#(Option(Int), Int, List(Token), Int), ParseError) {
-  let at_beginning = index == beginning_index
-
   case tokens {
     [] ->
       case digit_length > 0 {
@@ -173,7 +172,7 @@ fn parse_digit(
       }
     [first, ..rest] -> {
       let lookahead = rest |> list.first
-      let is_end = case lookahead {
+      let at_end = case lookahead {
         Ok(Digit(_)) -> False
         _ -> True
       }
@@ -185,14 +184,14 @@ fn parse_digit(
       case first {
         Digit(digit) -> {
           let acc = acc * 10 + digit
-          parse_digit(rest, acc, index + 1, beginning_index, digit_length + 1)
+          parse_digit(rest, acc, index + 1, False, digit_length + 1)
         }
         Underscore if next_is_underscore ->
           Error(InvalidUnderscorePosition(index + 1))
-        Underscore if at_beginning || is_end ->
+        Underscore if at_beginning || at_end ->
           Error(InvalidUnderscorePosition(index))
         Underscore -> {
-          parse_digit(rest, acc, index + 1, beginning_index, digit_length)
+          parse_digit(rest, acc, index + 1, False, digit_length)
         }
         Whitespace(whitespace) if at_beginning ->
           Error(UnknownCharacter(whitespace, index))
