@@ -35,7 +35,7 @@ pub fn parse_float(input: String) -> Result(String, ParseError) {
   use #(_, tokens, index) <- result.try(post_whitespace_result)
 
   case tokens |> list.first {
-    Ok(token) -> Error(extraneous_token_error(token, index))
+    Ok(token) -> Error(tokenizer.error_for_token(token, index))
     _ -> {
       case digit_pre_decimal, digit_post_decimal {
         Some(pre), Some(post) -> Ok(sign <> pre <> "." <> post)
@@ -75,7 +75,7 @@ pub fn parse_int(input: String) -> Result(String, ParseError) {
   use #(_, tokens, index) <- result.try(post_whitespace_result)
 
   case tokens |> list.first {
-    Ok(token) -> Error(extraneous_token_error(token, index))
+    Ok(token) -> Error(tokenizer.error_for_token(token, index))
     _ -> {
       case leading_whitespace, digit {
         Some(_), Some(digit) | None, Some(digit) -> Ok(sign <> digit)
@@ -189,17 +189,5 @@ fn parse_digit(
         }
       }
     }
-  }
-}
-
-// TODO: Move this to some place that makes more sense
-fn extraneous_token_error(token: Token, index) -> ParseError {
-  case token {
-    Digit(digit) -> InvalidDigitPosition(digit, index)
-    Sign(sign) -> InvalidSignPosition(sign, index)
-    Underscore -> InvalidUnderscorePosition(index)
-    Unknown(character) -> UnknownCharacter(character, index)
-    Whitespace(whitespace) -> UnknownCharacter(whitespace, index)
-    DecimalPoint -> InvalidDecimalPosition(index)
   }
 }

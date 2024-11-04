@@ -1,5 +1,9 @@
 import gleam/list
 import gleam/string
+import parse_error.{
+  type ParseError, InvalidDecimalPosition, InvalidDigitPosition,
+  InvalidSignPosition, InvalidUnderscorePosition, UnknownCharacter,
+}
 
 pub type Token {
   Sign(String)
@@ -30,5 +34,16 @@ fn do_tokenize(characters: List(String), acc: List(Token)) -> List(Token) {
 
       do_tokenize(rest, [token, ..acc])
     }
+  }
+}
+
+pub fn error_for_token(token: Token, index) -> ParseError {
+  case token {
+    Digit(digit) -> InvalidDigitPosition(digit, index)
+    Sign(sign) -> InvalidSignPosition(sign, index)
+    Underscore -> InvalidUnderscorePosition(index)
+    Unknown(character) -> UnknownCharacter(character, index)
+    Whitespace(whitespace) -> UnknownCharacter(whitespace, index)
+    DecimalPoint -> InvalidDecimalPosition(index)
   }
 }
