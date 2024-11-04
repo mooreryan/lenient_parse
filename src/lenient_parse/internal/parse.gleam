@@ -192,6 +192,7 @@ fn parse_digit(
   }
 }
 
+// TODO: Move this to some place that makes more sense
 fn extraneous_token_error(token: Token, index) -> ParseError {
   case token {
     Digit(digit) -> InvalidDigitPosition(digit, index)
