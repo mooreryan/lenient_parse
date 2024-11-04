@@ -39,7 +39,7 @@ pub type ParseError {
   ///
   /// - `character`: The invalid character as a `String`.
   /// - `index`: The position of the invalid character in the input string.
-  InvalidCharacter(character: String, index: Int)
+  UnknownCharacter(character: String, index: Int)
 
   /// Represents an error when Gleam's `float.parse` fails after custom parsing
   /// and coercion.
@@ -60,8 +60,8 @@ pub type ParseError {
 pub fn to_string(error: ParseError) -> String {
   case error {
     GleamIntParseError -> "gleam integer parse error"
-    InvalidCharacter(character, index) ->
-      "invalid character \""
+    UnknownCharacter(character, index) ->
+      "unknown character \""
       <> character
       <> "\" at index: "
       <> index |> int.to_string

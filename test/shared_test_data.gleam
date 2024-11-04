@@ -1,6 +1,6 @@
 import parse_error.{
-  type ParseError, EmptyString, InvalidCharacter, InvalidDecimalPosition,
-  InvalidDigitPosition, InvalidSignPosition, InvalidUnderscorePosition,
+  type ParseError, EmptyString, InvalidDecimalPosition, InvalidDigitPosition,
+  InvalidSignPosition, InvalidUnderscorePosition, UnknownCharacter,
   WhitespaceOnlyString,
 }
 
@@ -172,12 +172,12 @@ pub const float_data = [
   ),
   FloatTestData(
     input: "abc",
-    output: Error(InvalidCharacter("a", 0)),
+    output: Error(UnknownCharacter("a", 0)),
     python_output: Error(Nil),
   ),
   FloatTestData(
     input: "100.00c01",
-    output: Error(InvalidCharacter("c", 6)),
+    output: Error(UnknownCharacter("c", 6)),
     python_output: Error(Nil),
   ),
 ]
@@ -283,17 +283,17 @@ pub const int_data = [
   ),
   IntegerTestData(
     input: "a",
-    output: Error(InvalidCharacter("a", 0)),
+    output: Error(UnknownCharacter("a", 0)),
     python_output: Error(Nil),
   ),
   IntegerTestData(
     input: "1b1",
-    output: Error(InvalidCharacter("b", 1)),
+    output: Error(UnknownCharacter("b", 1)),
     python_output: Error(Nil),
   ),
   IntegerTestData(
     input: "+ 1",
-    output: Error(InvalidCharacter(" ", 1)),
+    output: Error(UnknownCharacter(" ", 1)),
     python_output: Error(Nil),
   ),
   IntegerTestData(
@@ -308,7 +308,7 @@ pub const int_data = [
   ),
   IntegerTestData(
     input: "abc",
-    output: Error(InvalidCharacter("a", 0)),
+    output: Error(UnknownCharacter("a", 0)),
     python_output: Error(Nil),
   ),
   IntegerTestData(

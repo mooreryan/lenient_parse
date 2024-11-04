@@ -6,8 +6,8 @@ import lenient_parse/internal/tokenizer.{
   type Token, DecimalPoint, Digit, Sign, Underscore, Unknown, Whitespace,
 }
 import parse_error.{
-  type ParseError, EmptyString, InvalidCharacter, InvalidDecimalPosition,
-  InvalidDigitPosition, InvalidSignPosition, InvalidUnderscorePosition,
+  type ParseError, EmptyString, InvalidDecimalPosition, InvalidDigitPosition,
+  InvalidSignPosition, InvalidUnderscorePosition, UnknownCharacter,
   WhitespaceOnlyString,
 }
 
@@ -99,7 +99,7 @@ fn parse_whitespace(
       }
     [first, ..rest] -> {
       case first {
-        Unknown(character) -> Error(InvalidCharacter(character, index))
+        Unknown(character) -> Error(UnknownCharacter(character, index))
         Whitespace(whitespace) ->
           parse_whitespace(rest, acc <> whitespace, index + 1)
         _ -> {
@@ -121,7 +121,7 @@ fn parse_sign(
     [] -> Ok(#("+", tokens, index))
     [first, ..rest] -> {
       case first {
-        Unknown(character) -> Error(InvalidCharacter(character, index))
+        Unknown(character) -> Error(UnknownCharacter(character, index))
         Sign(a) -> Ok(#(a, rest, index + 1))
         _ -> Ok(#("+", tokens, index))
       }
@@ -137,7 +137,7 @@ fn parse_decimal_point(
     [] -> Ok(#(False, tokens, index))
     [first, ..rest] -> {
       case first {
-        Unknown(character) -> Error(InvalidCharacter(character, index))
+        Unknown(character) -> Error(UnknownCharacter(character, index))
         DecimalPoint -> Ok(#(True, rest, index + 1))
         _ -> Ok(#(False, rest, index))
       }
@@ -179,8 +179,8 @@ fn parse_digit(
           Error(parse_error.InvalidUnderscorePosition(index))
         Underscore -> parse_digit(rest, acc, index + 1, beginning_index)
         Whitespace(whitespace) if at_beginning ->
-          Error(InvalidCharacter(whitespace, index))
-        Unknown(character) -> Error(InvalidCharacter(character, index))
+          Error(UnknownCharacter(whitespace, index))
+        Unknown(character) -> Error(UnknownCharacter(character, index))
         _ -> {
           case acc {
             "" -> Ok(#(None, tokens, index))
@@ -197,8 +197,8 @@ fn extraneous_token_error(token: Token, index) -> ParseError {
     Digit(digit) -> InvalidDigitPosition(digit, index)
     Sign(sign) -> InvalidSignPosition(sign, index)
     Underscore -> InvalidUnderscorePosition(index)
-    Unknown(character) -> InvalidCharacter(character, index)
-    Whitespace(whitespace) -> InvalidCharacter(whitespace, index)
+    Unknown(character) -> UnknownCharacter(character, index)
+    Whitespace(whitespace) -> UnknownCharacter(whitespace, index)
     DecimalPoint -> InvalidDecimalPosition(index)
   }
 }
