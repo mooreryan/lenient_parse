@@ -1,10 +1,11 @@
+import data/float_data
+import data/int_data
 import gleam/float
 import gleam/int
 import gleam/list
 import helpers
 import parse_error
 import python/python_parse
-import shared_test_data
 import startest.{describe, it}
 import startest/expect
 
@@ -12,12 +13,12 @@ pub fn check_against_python_tests() {
   describe("check_against_python_tests", [
     describe(
       "python_float_test",
-      shared_test_data.float_data
-        |> list.map(fn(test_data) {
-          let input = test_data.input
+      float_data.data
+        |> list.map(fn(data) {
+          let input = data.input
           let input_printable_text = input |> helpers.to_printable_text
-          let output = test_data.output
-          let python_output = test_data.python_output
+          let output = data.output
+          let python_output = data.python_output
 
           let message = case output, python_output {
             Ok(_), Ok(python_output) -> {
@@ -57,12 +58,12 @@ pub fn check_against_python_tests() {
     ),
     describe(
       "python_int_test",
-      shared_test_data.int_data
-        |> list.map(fn(test_data) {
-          let input = test_data.input
+      int_data.data
+        |> list.map(fn(data) {
+          let input = data.input
           let input_printable_text = input |> helpers.to_printable_text
-          let output = test_data.output
-          let python_output = test_data.python_output
+          let output = data.output
+          let python_output = data.python_output
 
           let message = case output, python_output {
             Ok(_), Ok(python_output) -> {
