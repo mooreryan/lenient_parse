@@ -32,26 +32,3 @@ fn do_tokenize(characters: List(String), acc: List(Token)) -> List(Token) {
     }
   }
 }
-
-pub fn is_digit(token: Token) -> Bool {
-  case token {
-    Digit(_) -> True
-    _ -> False
-  }
-}
-
-pub fn is_whitespace(token: Token) -> Bool {
-  case token {
-    Whitespace(_) -> True
-    _ -> False
-  }
-}
-
-pub fn to_result(token: Token) -> Result(String, String) {
-  case token {
-    DecimalPoint -> Ok(".")
-    Underscore -> Ok("_")
-    Digit(a) | Sign(a) | Whitespace(a) -> Ok(a)
-    Unknown(a) -> Error(a)
-  }
-}

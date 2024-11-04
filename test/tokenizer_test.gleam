@@ -1,5 +1,3 @@
-import gleam/list
-import gleam/string
 import lenient_parse/internal/tokenizer.{
   DecimalPoint, Digit, Sign, Underscore, Unknown, Whitespace, tokenize,
 }
@@ -32,37 +30,4 @@ pub fn tokenize_test() {
     Unknown("b"),
     Unknown("c"),
   ])
-}
-
-pub fn is_digit_test() {
-  "0123456789"
-  |> tokenize
-  |> list.each(fn(token) { token |> tokenizer.is_digit |> expect.to_be_true })
-
-  "abc"
-  |> tokenize
-  |> list.each(fn(token) { token |> tokenizer.is_digit |> expect.to_be_false })
-}
-
-pub fn to_result_test() {
-  "0123456789"
-  |> tokenize
-  |> list.each(fn(token) { token |> tokenizer.to_result |> expect.to_be_ok })
-
-  "._"
-  |> tokenize
-  |> list.each(fn(token) { token |> tokenizer.to_result |> expect.to_be_ok })
-
-  "+-"
-  |> tokenize
-  |> list.each(fn(token) { token |> tokenizer.to_result |> expect.to_be_ok })
-
-  [" ", "\n", "\t", "\r", "\f", "\r\n"]
-  |> string.join("")
-  |> tokenize
-  |> list.each(fn(token) { token |> tokenizer.to_result |> expect.to_be_ok })
-
-  "abc"
-  |> tokenize
-  |> list.each(fn(token) { token |> tokenizer.to_result |> expect.to_be_error })
 }
