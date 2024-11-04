@@ -6,8 +6,7 @@ import lenient_parse/internal/tokenizer.{
   type Token, DecimalPoint, Digit, Sign, Underscore, Unknown, Whitespace,
 }
 import parse_error.{
-  type ParseError, EmptyString, InvalidDecimalPosition, InvalidDigitPosition,
-  InvalidSignPosition, InvalidUnderscorePosition, UnknownCharacter,
+  type ParseError, EmptyString, InvalidDecimalPosition, UnknownCharacter,
   WhitespaceOnlyString,
 }
 
