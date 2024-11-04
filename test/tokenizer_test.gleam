@@ -4,7 +4,7 @@ import lenient_parse/internal/tokenizer.{
 import startest/expect
 
 pub fn tokenize_test() {
-  " \t\n\r\f+-0123456789._abc"
+  " \t\n\r\f\r\n+-0123456789._abc"
   |> tokenize
   |> expect.to_equal([
     Whitespace(" "),
@@ -12,6 +12,7 @@ pub fn tokenize_test() {
     Whitespace("\n"),
     Whitespace("\r"),
     Whitespace("\f"),
+    Whitespace("\r\n"),
     Sign("+"),
     Sign("-"),
     Digit("0"),
