@@ -42,8 +42,42 @@ pub fn parse_float(input: String) -> Result(Float, ParseError) {
     fractional_digit_result,
   )
 
-  let scientific_notation_result =
-    parse_exponential_notation(tokens, index, whole_digit, fractional_digit)
+  let missing_digit_parts =
+    option.is_none(whole_digit) && option.is_none(fractional_digit)
+  use <- bool.guard(
+    missing_digit_parts && decimal_specified,
+    Error(InvalidDecimalPosition(index - 1)),
+  )
+
+  let exponent_symbol_result = parse_exponent_symbol(tokens, index)
+  use #(exponent_symbol, tokens, index) <- result.try(exponent_symbol_result)
+
+  let scientific_notation_result = case missing_digit_parts, exponent_symbol {
+    True, Some(exponent_symbol) ->
+      Error(InvalidExponentSymbolPosition(exponent_symbol, index - 1))
+    _, None -> Ok(#(0, True, tokens, index))
+    _, Some(exponent_symbol) -> {
+      let exponent_sign_result = parse_sign(tokens, index)
+      use #(exponent_digit_is_positive, tokens, index) <- result.try(
+        exponent_sign_result,
+      )
+
+      let exponent_digit_result = parse_digit(tokens, index)
+      use #(digit, digit_length, tokens, index) <- result.try(
+        exponent_digit_result,
+      )
+
+      let exponent_digit_result = case digit {
+        Some(digit) -> Ok(#(digit, digit_length, tokens, index))
+        None -> Error(InvalidExponentSymbolPosition(exponent_symbol, index - 1))
+      }
+      use #(exponent_digit, _, tokens, index) <- result.try(
+        exponent_digit_result,
+      )
+
+      Ok(#(exponent_digit, exponent_digit_is_positive, tokens, index))
+    }
+  }
   use #(exponent_digit, exponent_digit_is_positive, tokens, index) <- result.try(
     scientific_notation_result,
   )
@@ -57,11 +91,10 @@ pub fn parse_float(input: String) -> Result(Float, ParseError) {
   }
   use _ <- result.try(remaining_token_result)
 
-  case leading_whitespace, whole_digit, decimal_specified, fractional_digit {
-    None, None, False, None -> Error(EmptyString)
-    Some(_), None, False, None -> Error(WhitespaceOnlyString)
-    _, None, True, None -> Error(InvalidDecimalPosition(index - 1))
-    _, _, _, _ ->
+  case leading_whitespace, whole_digit, fractional_digit {
+    None, None, None -> Error(EmptyString)
+    Some(_), None, None -> Error(WhitespaceOnlyString)
+    _, _, _ ->
       Ok(form_float(
         is_positive: is_positive,
         whole_digit: whole_digit |> option.unwrap(0),
@@ -173,49 +206,6 @@ fn parse_decimal_point(
       }
     }
   }
-}
-
-// This feels bad - it breaks the expected recursive function interface and code
-// feels ugly
-fn parse_exponential_notation(
-  tokens: List(Token),
-  index: Int,
-  whole_digit: Option(Int),
-  fractional_digit: Option(Int),
-) -> Result(#(Int, Bool, List(Token), Int), ParseError) {
-  let exponent_symbol_result = parse_exponent_symbol(tokens, index)
-  use #(exponent_symbol, tokens, index) <- result.try(exponent_symbol_result)
-
-  let exponent_sign_result = case exponent_symbol {
-    Some(exponent_symbol) -> {
-      use <- bool.guard(
-        option.is_none(whole_digit) && option.is_none(fractional_digit),
-        Error(InvalidExponentSymbolPosition(exponent_symbol, index - 1)),
-      )
-      parse_sign(tokens, index)
-    }
-    None -> Ok(#(False, tokens, index))
-  }
-  use #(exponent_digit_is_positive, tokens, index) <- result.try(
-    exponent_sign_result,
-  )
-
-  let exponent_digit_result = case exponent_symbol {
-    Some(exponent_symbol) -> {
-      let exponent_digit_result = parse_digit(tokens, index)
-      use #(digit, digit_length, tokens, index) <- result.try(
-        exponent_digit_result,
-      )
-      case digit {
-        Some(digit) -> Ok(#(digit, digit_length, tokens, index))
-        None -> Error(InvalidExponentSymbolPosition(exponent_symbol, index - 1))
-      }
-    }
-    None -> Ok(#(0, 1, tokens, index))
-  }
-  use #(exponent_digit, _, tokens, index) <- result.try(exponent_digit_result)
-
-  Ok(#(exponent_digit, exponent_digit_is_positive, tokens, index))
 }
 
 fn parse_exponent_symbol(
