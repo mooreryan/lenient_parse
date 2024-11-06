@@ -20,9 +20,8 @@ pub fn parse_into_valid_number_string_tests() {
           Ok(output) -> {
             "should_parse: \""
             <> input_printable_text
-            <> "\" -> \""
+            <> "\" -> "
             <> output |> float.to_string
-            <> "\""
           }
           Error(error) -> {
             let error_string = error |> parse_error.to_string
