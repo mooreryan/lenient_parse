@@ -60,7 +60,7 @@ pub fn tokenize_int_test() {
     Digit(9),
     Unknown("e"),
     Unknown("E"),
-    DecimalPoint,
+    Unknown("."),
     Underscore,
     Unknown("a"),
     Unknown("b"),

@@ -1,6 +1,6 @@
 import gleam/list
 import parse_error.{
-  EmptyString, InvalidDecimalPosition, InvalidDigitPosition, InvalidSignPosition,
+  EmptyString, InvalidDigitPosition, InvalidSignPosition,
   InvalidUnderscorePosition, UnknownCharacter, WhitespaceOnlyString,
 }
 import types.{type IntegerTestData, IntegerTestData}
@@ -113,6 +113,36 @@ const invalid_characters: List(IntegerTestData) = [
     python_output: Error(Nil),
   ),
   IntegerTestData(
+    input: ".",
+    output: Error(UnknownCharacter(".", 0)),
+    python_output: Error(Nil),
+  ),
+  IntegerTestData(
+    input: "..",
+    output: Error(UnknownCharacter(".", 0)),
+    python_output: Error(Nil),
+  ),
+  IntegerTestData(
+    input: "0.0.",
+    output: Error(UnknownCharacter(".", 1)),
+    python_output: Error(Nil),
+  ),
+  IntegerTestData(
+    input: ".0.0",
+    output: Error(UnknownCharacter(".", 0)),
+    python_output: Error(Nil),
+  ),
+  IntegerTestData(
+    input: "1.",
+    output: Error(UnknownCharacter(".", 1)),
+    python_output: Error(Nil),
+  ),
+  IntegerTestData(
+    input: "1.0",
+    output: Error(UnknownCharacter(".", 1)),
+    python_output: Error(Nil),
+  ),
+  IntegerTestData(
     input: "abc",
     output: Error(UnknownCharacter("a", 0)),
     python_output: Error(Nil),
@@ -195,39 +225,6 @@ const invalid_sign_positions: List(IntegerTestData) = [
   ),
 ]
 
-const invalid_decimal_positions: List(IntegerTestData) = [
-  IntegerTestData(
-    input: ".",
-    output: Error(InvalidDecimalPosition(0)),
-    python_output: Error(Nil),
-  ),
-  IntegerTestData(
-    input: "..",
-    output: Error(InvalidDecimalPosition(0)),
-    python_output: Error(Nil),
-  ),
-  IntegerTestData(
-    input: "0.0.",
-    output: Error(InvalidDecimalPosition(1)),
-    python_output: Error(Nil),
-  ),
-  IntegerTestData(
-    input: ".0.0",
-    output: Error(InvalidDecimalPosition(0)),
-    python_output: Error(Nil),
-  ),
-  IntegerTestData(
-    input: "1.",
-    output: Error(InvalidDecimalPosition(1)),
-    python_output: Error(Nil),
-  ),
-  IntegerTestData(
-    input: "1.0",
-    output: Error(InvalidDecimalPosition(1)),
-    python_output: Error(Nil),
-  ),
-]
-
 const invalid_mixed: List(IntegerTestData) = [
   IntegerTestData(
     input: "e_1_3",
@@ -241,7 +238,7 @@ const invalid_mixed: List(IntegerTestData) = [
   ),
   IntegerTestData(
     input: "1._3_e",
-    output: Error(InvalidDecimalPosition(1)),
+    output: Error(UnknownCharacter(".", 1)),
     python_output: Error(Nil),
   ),
   IntegerTestData(
@@ -263,7 +260,6 @@ pub fn data() -> List(IntegerTestData) {
     invalid_characters,
     invalid_digit_positions,
     invalid_sign_positions,
-    invalid_decimal_positions,
     invalid_mixed,
   ]
   |> list.flatten

@@ -19,6 +19,7 @@ fn do_tokenize_float(characters: List(String), acc: List(Token)) -> List(Token) 
     [first, ..rest] -> {
       let token = int_token(first)
       let token = case token {
+        Unknown(".") -> DecimalPoint
         Unknown(a) | Unknown(a) if a == "e" || a == "E" -> Exponent(a)
         _ -> token
       }
@@ -52,7 +53,6 @@ fn int_token(character: String) -> Token {
     "7" -> Digit(7)
     "8" -> Digit(8)
     "9" -> Digit(9)
-    "." -> DecimalPoint
     "_" -> Underscore
     " " | "\n" | "\t" | "\r" | "\f" | "\r\n" -> Whitespace(character)
     _ -> Unknown(character)
