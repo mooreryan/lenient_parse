@@ -1,6 +1,6 @@
 # Changelog
 
-## v1.3.0 - xxx
+## v1.1.0 - xxx
 
 - Added support for scientific notation for float parsing.
     - Ex: `lenient_parse.to_float("4e-3")` // Ok(0.004)
@@ -9,7 +9,7 @@
     - `InvalidCharacter` has been renamed to `UnknownCharacter`.
     - A new `InvalidDigitPosition` error has been introduced.
 
-## v1.2.0 - 2024-10-20
+## v1.0.2 - 2024-10-20
 
 - Fixed bugs.
 - Return custom error types for various parsing errors instead of simply `Nil`.
