@@ -78,36 +78,7 @@ pub fn parse_float(input: String) -> Result(Float, ParseError) {
     Ok(token) -> Error(token.to_error(token, index))
     _ -> {
       case whole_digit, fractional_digit {
-        Some(whole_digit), Some(fractional_digit) ->
-          Ok(form_float(
-            is_positive: is_positive,
-            whole_digit: whole_digit,
-            fractional_digit: fractional_digit,
-            fractional_length: fractional_length,
-            exponent_digit_is_positive: exponent_digit_is_positive,
-            exponent_digit: exponent_digit,
-          ))
-        Some(whole_digit), None ->
-          Ok(form_float(
-            is_positive: is_positive,
-            whole_digit: whole_digit,
-            fractional_digit: 0,
-            fractional_length: fractional_length,
-            exponent_digit_is_positive: exponent_digit_is_positive,
-            exponent_digit: exponent_digit,
-          ))
-        None, Some(fractional_digit) ->
-          Ok(form_float(
-            is_positive: is_positive,
-            whole_digit: 0,
-            fractional_digit: fractional_digit,
-            fractional_length: fractional_length,
-            exponent_digit_is_positive: exponent_digit_is_positive,
-            exponent_digit: exponent_digit,
-          ))
-        _, _ -> {
-          // TODO: This sucks - hardcoded to take care of one specific test case during the rewrite: "."
-          // There is likely a better way to handle this.
+        None, None -> {
           use <- bool.guard(
             decimal_specified,
             Error(InvalidDecimalPosition(index - 1)),
@@ -117,6 +88,17 @@ pub fn parse_float(input: String) -> Result(Float, ParseError) {
             Some(_) -> Error(WhitespaceOnlyString)
             _ -> Error(EmptyString)
           }
+        }
+        _, _ -> {
+          form_float(
+            is_positive: is_positive,
+            whole_digit: whole_digit |> option.unwrap(0),
+            fractional_digit: fractional_digit |> option.unwrap(0),
+            fractional_length: fractional_length,
+            exponent_digit_is_positive: exponent_digit_is_positive,
+            exponent_digit: exponent_digit,
+          )
+          |> Ok
         }
       }
     }
