@@ -17,7 +17,7 @@ import parse_error.{
 }
 
 pub fn parse_float(input: String) -> Result(Float, ParseError) {
-  let tokens = input |> tokenizer.tokenize
+  let tokens = input |> tokenizer.tokenize_float
   let index = 0
 
   let leading_whitespace_result = parse_whitespace(tokens, index)
@@ -98,7 +98,7 @@ pub fn parse_float(input: String) -> Result(Float, ParseError) {
 }
 
 pub fn parse_int(input: String) -> Result(Int, ParseError) {
-  let tokens = input |> tokenizer.tokenize
+  let tokens = input |> tokenizer.tokenize_int
   let index = 0
 
   let leading_whitespace_result = parse_whitespace(tokens, index)

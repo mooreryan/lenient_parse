@@ -1,8 +1,7 @@
 import gleam/list
 import parse_error.{
-  EmptyString, InvalidDecimalPosition, InvalidDigitPosition,
-  InvalidExponentSymbolPosition, InvalidSignPosition, InvalidUnderscorePosition,
-  UnknownCharacter, WhitespaceOnlyString,
+  EmptyString, InvalidDecimalPosition, InvalidDigitPosition, InvalidSignPosition,
+  InvalidUnderscorePosition, UnknownCharacter, WhitespaceOnlyString,
 }
 import types.{type IntegerTestData, IntegerTestData}
 
@@ -192,42 +191,42 @@ const invalid_decimal_positions: List(IntegerTestData) = [
 const invalid_exponent_positions: List(IntegerTestData) = [
   IntegerTestData(
     input: "e",
-    output: Error(InvalidExponentSymbolPosition("e", 0)),
+    output: Error(UnknownCharacter("e", 0)),
     python_output: Error(Nil),
   ),
   IntegerTestData(
     input: "E",
-    output: Error(InvalidExponentSymbolPosition("E", 0)),
+    output: Error(UnknownCharacter("E", 0)),
     python_output: Error(Nil),
   ),
   IntegerTestData(
     input: "e13",
-    output: Error(InvalidExponentSymbolPosition("e", 0)),
+    output: Error(UnknownCharacter("e", 0)),
     python_output: Error(Nil),
   ),
   IntegerTestData(
     input: "1e3",
-    output: Error(InvalidExponentSymbolPosition("e", 1)),
+    output: Error(UnknownCharacter("e", 1)),
     python_output: Error(Nil),
   ),
   IntegerTestData(
     input: "13e",
-    output: Error(InvalidExponentSymbolPosition("e", 2)),
+    output: Error(UnknownCharacter("e", 2)),
     python_output: Error(Nil),
   ),
   IntegerTestData(
     input: "E13",
-    output: Error(InvalidExponentSymbolPosition("E", 0)),
+    output: Error(UnknownCharacter("E", 0)),
     python_output: Error(Nil),
   ),
   IntegerTestData(
     input: "1E3",
-    output: Error(InvalidExponentSymbolPosition("E", 1)),
+    output: Error(UnknownCharacter("E", 1)),
     python_output: Error(Nil),
   ),
   IntegerTestData(
     input: "13E",
-    output: Error(InvalidExponentSymbolPosition("E", 2)),
+    output: Error(UnknownCharacter("E", 2)),
     python_output: Error(Nil),
   ),
 ]
