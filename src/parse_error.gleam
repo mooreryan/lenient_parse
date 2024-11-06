@@ -55,20 +55,20 @@ pub fn to_string(error: ParseError) -> String {
     EmptyString -> "empty string"
     WhitespaceOnlyString -> "whitespace only string"
     InvalidUnderscorePosition(index) ->
-      "invalid underscore at position: " <> index |> int.to_string
+      "underscore at invalid position: " <> index |> int.to_string
     InvalidDecimalPosition(index) ->
-      "invalid decimal at position: " <> index |> int.to_string
+      "decimal at invalid position: " <> index |> int.to_string
     InvalidSignPosition(sign, index) ->
-      "invalid sign \"" <> sign <> "\" at position: " <> index |> int.to_string
+      "sign \"" <> sign <> "\" at invalid position: " <> index |> int.to_string
     InvalidDigitPosition(digit, index) ->
-      "invalid digit \""
+      "digit \""
       <> digit
-      <> "\" at position: "
+      <> "\" at invalid position: "
       <> index |> int.to_string
     InvalidExponentSymbolPosition(exponent, index) ->
-      "invalid exponent symbol \""
+      "exponent symbol \""
       <> exponent
-      <> "\" at position: "
+      <> "\" at invalid position: "
       <> index |> int.to_string
     UnknownCharacter(character, index) ->
       "unknown character \""
