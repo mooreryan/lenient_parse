@@ -34,12 +34,12 @@ pub type ParseError {
   /// - `index`: The position of the invalid digit in the input string.
   InvalidDigitPosition(character: String, index: Int)
 
-  /// Represents an error when an exponent character (e or E) is in an invalid
+  /// Represents an error when an exponent symbol (e or E) is in an invalid
   /// position within the number string.
   ///
-  /// - `character`: The exponent character that caused the error as a `String`.
-  /// - `index`: The position of the invalid exponent in the input string.
-  InvalidExponentPosition(character: String, index: Int)
+  /// - `character`: The exponent symbol that caused the error as a `String`.
+  /// - `index`: The position of the invalid exponent symbol in the input string.
+  InvalidExponentSymbolPosition(character: String, index: Int)
 
   /// Represents an error when an invalid character is encountered during
   /// parsing.
@@ -65,8 +65,8 @@ pub fn to_string(error: ParseError) -> String {
       <> digit
       <> "\" at position: "
       <> index |> int.to_string
-    InvalidExponentPosition(exponent, index) ->
-      "invalid exponent \""
+    InvalidExponentSymbolPosition(exponent, index) ->
+      "invalid exponent symbol \""
       <> exponent
       <> "\" at position: "
       <> index |> int.to_string

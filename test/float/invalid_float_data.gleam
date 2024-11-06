@@ -1,6 +1,6 @@
 import gleam/list
 import parse_error.{
-  EmptyString, InvalidDecimalPosition, InvalidExponentPosition,
+  EmptyString, InvalidDecimalPosition, InvalidExponentSymbolPosition,
   InvalidUnderscorePosition, UnknownCharacter, WhitespaceOnlyString,
 }
 import types.{type FloatTestData, FloatTestData}
@@ -155,92 +155,92 @@ const invalid_characters: List(FloatTestData) = [
 const invalid_exponent_positions: List(FloatTestData) = [
   FloatTestData(
     input: "e",
-    output: Error(InvalidExponentPosition("e", 0)),
+    output: Error(InvalidExponentSymbolPosition("e", 0)),
     python_output: Error(Nil),
   ),
   FloatTestData(
     input: "E",
-    output: Error(InvalidExponentPosition("E", 0)),
+    output: Error(InvalidExponentSymbolPosition("E", 0)),
     python_output: Error(Nil),
   ),
   FloatTestData(
     input: "e4",
-    output: Error(InvalidExponentPosition("e", 0)),
+    output: Error(InvalidExponentSymbolPosition("e", 0)),
     python_output: Error(Nil),
   ),
   FloatTestData(
     input: "E4",
-    output: Error(InvalidExponentPosition("E", 0)),
+    output: Error(InvalidExponentSymbolPosition("E", 0)),
     python_output: Error(Nil),
   ),
   FloatTestData(
     input: "4e",
-    output: Error(InvalidExponentPosition("e", 1)),
+    output: Error(InvalidExponentSymbolPosition("e", 1)),
     python_output: Error(Nil),
   ),
   FloatTestData(
     input: "4E",
-    output: Error(InvalidExponentPosition("E", 1)),
+    output: Error(InvalidExponentSymbolPosition("E", 1)),
     python_output: Error(Nil),
   ),
   FloatTestData(
     input: ".e",
-    output: Error(InvalidExponentPosition("e", 1)),
+    output: Error(InvalidExponentSymbolPosition("e", 1)),
     python_output: Error(Nil),
   ),
   FloatTestData(
     input: ".E",
-    output: Error(InvalidExponentPosition("E", 1)),
+    output: Error(InvalidExponentSymbolPosition("E", 1)),
     python_output: Error(Nil),
   ),
   FloatTestData(
     input: ".e4",
-    output: Error(InvalidExponentPosition("e", 1)),
+    output: Error(InvalidExponentSymbolPosition("e", 1)),
     python_output: Error(Nil),
   ),
   FloatTestData(
     input: ".E4",
-    output: Error(InvalidExponentPosition("E", 1)),
+    output: Error(InvalidExponentSymbolPosition("E", 1)),
     python_output: Error(Nil),
   ),
   FloatTestData(
     input: "4.e",
-    output: Error(InvalidExponentPosition("e", 2)),
+    output: Error(InvalidExponentSymbolPosition("e", 2)),
     python_output: Error(Nil),
   ),
   FloatTestData(
     input: "4.E",
-    output: Error(InvalidExponentPosition("E", 2)),
+    output: Error(InvalidExponentSymbolPosition("E", 2)),
     python_output: Error(Nil),
   ),
   FloatTestData(
     input: "4e.",
-    output: Error(InvalidExponentPosition("e", 1)),
+    output: Error(InvalidExponentSymbolPosition("e", 1)),
     python_output: Error(Nil),
   ),
   FloatTestData(
     input: "4E.",
-    output: Error(InvalidExponentPosition("E", 1)),
+    output: Error(InvalidExponentSymbolPosition("E", 1)),
     python_output: Error(Nil),
   ),
   FloatTestData(
     input: "E4.0",
-    output: Error(InvalidExponentPosition("E", 0)),
+    output: Error(InvalidExponentSymbolPosition("E", 0)),
     python_output: Error(Nil),
   ),
   FloatTestData(
     input: "4.0E",
-    output: Error(InvalidExponentPosition("E", 3)),
+    output: Error(InvalidExponentSymbolPosition("E", 3)),
     python_output: Error(Nil),
   ),
   FloatTestData(
     input: "4.0E_2",
-    output: Error(InvalidExponentPosition("E", 3)),
+    output: Error(InvalidExponentSymbolPosition("E", 3)),
     python_output: Error(Nil),
   ),
   FloatTestData(
     input: "1_234.e-4e",
-    output: Error(InvalidExponentPosition("e", 9)),
+    output: Error(InvalidExponentSymbolPosition("e", 9)),
     python_output: Error(Nil),
   ),
 ]

@@ -11,8 +11,9 @@ import lenient_parse/internal/token.{
 
 import lenient_parse/internal/tokenizer
 import parse_error.{
-  type ParseError, EmptyString, InvalidDecimalPosition, InvalidExponentPosition,
-  InvalidUnderscorePosition, UnknownCharacter, WhitespaceOnlyString,
+  type ParseError, EmptyString, InvalidDecimalPosition,
+  InvalidExponentSymbolPosition, InvalidUnderscorePosition, UnknownCharacter,
+  WhitespaceOnlyString,
 }
 
 pub fn parse_float(input: String) -> Result(Float, ParseError) {
@@ -48,7 +49,7 @@ pub fn parse_float(input: String) -> Result(Float, ParseError) {
     Some(exponent_symbol) -> {
       use <- bool.guard(
         option.is_none(whole_digit) && option.is_none(fractional_digit),
-        Error(InvalidExponentPosition(exponent_symbol, index - 1)),
+        Error(InvalidExponentSymbolPosition(exponent_symbol, index - 1)),
       )
       parse_sign(tokens, index)
     }
@@ -64,7 +65,7 @@ pub fn parse_float(input: String) -> Result(Float, ParseError) {
       case parse_digit(tokens, index) {
         Ok(#(Some(digit), digit_length, tokens, index)) ->
           Ok(#(digit, digit_length, tokens, index))
-        _ -> Error(InvalidExponentPosition(exponent_symbol, index - 1))
+        _ -> Error(InvalidExponentSymbolPosition(exponent_symbol, index - 1))
       }
     }
     None -> Ok(#(0, 1, tokens, index))

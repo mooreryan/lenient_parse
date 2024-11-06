@@ -1,7 +1,7 @@
 import gleam/int
 import parse_error.{
   type ParseError, InvalidDecimalPosition, InvalidDigitPosition,
-  InvalidExponentPosition, InvalidSignPosition, InvalidUnderscorePosition,
+  InvalidExponentSymbolPosition, InvalidSignPosition, InvalidUnderscorePosition,
   UnknownCharacter,
 }
 
@@ -21,7 +21,7 @@ pub fn to_error(token: Token, index) -> ParseError {
     Digit(digit) -> InvalidDigitPosition(digit |> int.to_string, index)
     Underscore -> InvalidUnderscorePosition(index)
     DecimalPoint -> InvalidDecimalPosition(index)
-    Exponent(exponent) -> InvalidExponentPosition(exponent, index)
+    Exponent(exponent) -> InvalidExponentSymbolPosition(exponent, index)
     Whitespace(whitespace) -> UnknownCharacter(whitespace, index)
     Unknown(character) -> UnknownCharacter(character, index)
   }
