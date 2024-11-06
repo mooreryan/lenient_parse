@@ -65,6 +65,7 @@ pub fn parse_float(input: String) -> Result(Float, ParseError) {
       case parse_digit(tokens, index) {
         Ok(#(Some(digit), digit_length, tokens, index)) ->
           Ok(#(digit, digit_length, tokens, index))
+        Error(error) -> Error(error)
         _ -> Error(InvalidExponentSymbolPosition(exponent_symbol, index - 1))
       }
     }

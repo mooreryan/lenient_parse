@@ -46,6 +46,11 @@ const invalid_empty_or_whitespace: List(FloatTestData) = [
     output: Error(WhitespaceOnlyString),
     python_output: Error(Nil),
   ),
+  FloatTestData(
+    input: "  \t  ",
+    output: Error(WhitespaceOnlyString),
+    python_output: Error(Nil),
+  ),
 ]
 
 const invalid_decimal_positions: List(FloatTestData) = [
@@ -77,6 +82,16 @@ const invalid_decimal_positions: List(FloatTestData) = [
   FloatTestData(
     input: " .",
     output: Error(InvalidDecimalPosition(1)),
+    python_output: Error(Nil),
+  ),
+  FloatTestData(
+    input: "1.2.3",
+    output: Error(InvalidDecimalPosition(3)),
+    python_output: Error(Nil),
+  ),
+  FloatTestData(
+    input: ".1.2",
+    output: Error(InvalidDecimalPosition(2)),
     python_output: Error(Nil),
   ),
 ]
@@ -132,6 +147,16 @@ const invalid_underscore_positions: List(FloatTestData) = [
     output: Error(InvalidUnderscorePosition(6)),
     python_output: Error(Nil),
   ),
+  FloatTestData(
+    input: "_1_000.0",
+    output: Error(InvalidUnderscorePosition(0)),
+    python_output: Error(Nil),
+  ),
+  FloatTestData(
+    input: "1_000.0_",
+    output: Error(InvalidUnderscorePosition(7)),
+    python_output: Error(Nil),
+  ),
 ]
 
 const invalid_characters: List(FloatTestData) = [
@@ -148,6 +173,16 @@ const invalid_characters: List(FloatTestData) = [
   FloatTestData(
     input: "100.00c01",
     output: Error(UnknownCharacter("c", 6)),
+    python_output: Error(Nil),
+  ),
+  FloatTestData(
+    input: "3.14f",
+    output: Error(UnknownCharacter("f", 4)),
+    python_output: Error(Nil),
+  ),
+  FloatTestData(
+    input: "$100.00",
+    output: Error(UnknownCharacter("$", 0)),
     python_output: Error(Nil),
   ),
 ]
@@ -234,18 +269,33 @@ const invalid_exponent_positions: List(FloatTestData) = [
     python_output: Error(Nil),
   ),
   FloatTestData(
-    input: "4.0E_2",
-    output: Error(InvalidExponentSymbolPosition("E", 3)),
+    input: "1_234.e-4e",
+    output: Error(InvalidExponentSymbolPosition("e", 9)),
     python_output: Error(Nil),
   ),
   FloatTestData(
-    input: "1_234.e-4e",
-    output: Error(InvalidExponentSymbolPosition("e", 9)),
+    input: "1e2e3",
+    output: Error(InvalidExponentSymbolPosition("e", 3)),
+    python_output: Error(Nil),
+  ),
+  FloatTestData(
+    input: "1E2E3",
+    output: Error(InvalidExponentSymbolPosition("E", 3)),
     python_output: Error(Nil),
   ),
 ]
 
 const invalid_mixed: List(FloatTestData) = [
+  FloatTestData(
+    input: "4.0E_2",
+    output: Error(InvalidUnderscorePosition(4)),
+    python_output: Error(Nil),
+  ),
+  FloatTestData(
+    input: "1.2e_3",
+    output: Error(InvalidUnderscorePosition(4)),
+    python_output: Error(Nil),
+  ),
   FloatTestData(
     input: "4.0_E2",
     output: Error(InvalidUnderscorePosition(3)),
@@ -254,6 +304,16 @@ const invalid_mixed: List(FloatTestData) = [
   FloatTestData(
     input: "1_234.e-4.3",
     output: Error(InvalidDecimalPosition(9)),
+    python_output: Error(Nil),
+  ),
+  FloatTestData(
+    input: "_1.2e3",
+    output: Error(InvalidUnderscorePosition(0)),
+    python_output: Error(Nil),
+  ),
+  FloatTestData(
+    input: "1.2e3_",
+    output: Error(InvalidUnderscorePosition(5)),
     python_output: Error(Nil),
   ),
 ]

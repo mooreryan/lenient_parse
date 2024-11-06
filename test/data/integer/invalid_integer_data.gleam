@@ -46,6 +46,11 @@ const invalid_empty_or_whitespace: List(IntegerTestData) = [
     output: Error(WhitespaceOnlyString),
     python_output: Error(Nil),
   ),
+  IntegerTestData(
+    input: "   ",
+    output: Error(WhitespaceOnlyString),
+    python_output: Error(Nil),
+  ),
 ]
 
 const invalid_underscore_positions: List(IntegerTestData) = [
@@ -92,6 +97,16 @@ const invalid_underscore_positions: List(IntegerTestData) = [
   IntegerTestData(
     input: "1_000__000",
     output: Error(InvalidUnderscorePosition(6)),
+    python_output: Error(Nil),
+  ),
+  IntegerTestData(
+    input: "_1_000",
+    output: Error(InvalidUnderscorePosition(0)),
+    python_output: Error(Nil),
+  ),
+  IntegerTestData(
+    input: "1_000_",
+    output: Error(InvalidUnderscorePosition(5)),
     python_output: Error(Nil),
   ),
 ]
@@ -187,6 +202,16 @@ const invalid_characters: List(IntegerTestData) = [
     output: Error(UnknownCharacter("E", 2)),
     python_output: Error(Nil),
   ),
+  IntegerTestData(
+    input: "1$",
+    output: Error(UnknownCharacter("$", 1)),
+    python_output: Error(Nil),
+  ),
+  IntegerTestData(
+    input: "#123",
+    output: Error(UnknownCharacter("#", 0)),
+    python_output: Error(Nil),
+  ),
 ]
 
 const invalid_digit_positions: List(IntegerTestData) = [
@@ -198,6 +223,16 @@ const invalid_digit_positions: List(IntegerTestData) = [
   IntegerTestData(
     input: " 12 34 ",
     output: Error(InvalidDigitPosition("3", 4)),
+    python_output: Error(Nil),
+  ),
+  IntegerTestData(
+    input: "1 2 3",
+    output: Error(InvalidDigitPosition("2", 2)),
+    python_output: Error(Nil),
+  ),
+  IntegerTestData(
+    input: "123 456",
+    output: Error(InvalidDigitPosition("4", 4)),
     python_output: Error(Nil),
   ),
 ]
@@ -220,6 +255,16 @@ const invalid_sign_positions: List(IntegerTestData) = [
   ),
   IntegerTestData(
     input: "1-1",
+    output: Error(InvalidSignPosition("-", 1)),
+    python_output: Error(Nil),
+  ),
+  IntegerTestData(
+    input: "++1",
+    output: Error(InvalidSignPosition("+", 1)),
+    python_output: Error(Nil),
+  ),
+  IntegerTestData(
+    input: "--1",
     output: Error(InvalidSignPosition("-", 1)),
     python_output: Error(Nil),
   ),
@@ -249,6 +294,16 @@ const invalid_mixed: List(IntegerTestData) = [
   IntegerTestData(
     input: "1 1+._3_e",
     output: Error(InvalidDigitPosition("1", 2)),
+    python_output: Error(Nil),
+  ),
+  IntegerTestData(
+    input: "1_a_2",
+    output: Error(InvalidUnderscorePosition(1)),
+    python_output: Error(Nil),
+  ),
+  IntegerTestData(
+    input: "+1.2_3",
+    output: Error(UnknownCharacter(".", 2)),
     python_output: Error(Nil),
   ),
 ]
