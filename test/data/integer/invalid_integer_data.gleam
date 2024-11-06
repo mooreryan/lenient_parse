@@ -117,6 +117,46 @@ const invalid_characters: List(IntegerTestData) = [
     output: Error(UnknownCharacter("a", 0)),
     python_output: Error(Nil),
   ),
+  IntegerTestData(
+    input: "e",
+    output: Error(UnknownCharacter("e", 0)),
+    python_output: Error(Nil),
+  ),
+  IntegerTestData(
+    input: "E",
+    output: Error(UnknownCharacter("E", 0)),
+    python_output: Error(Nil),
+  ),
+  IntegerTestData(
+    input: "e13",
+    output: Error(UnknownCharacter("e", 0)),
+    python_output: Error(Nil),
+  ),
+  IntegerTestData(
+    input: "1e3",
+    output: Error(UnknownCharacter("e", 1)),
+    python_output: Error(Nil),
+  ),
+  IntegerTestData(
+    input: "13e",
+    output: Error(UnknownCharacter("e", 2)),
+    python_output: Error(Nil),
+  ),
+  IntegerTestData(
+    input: "E13",
+    output: Error(UnknownCharacter("E", 0)),
+    python_output: Error(Nil),
+  ),
+  IntegerTestData(
+    input: "1E3",
+    output: Error(UnknownCharacter("E", 1)),
+    python_output: Error(Nil),
+  ),
+  IntegerTestData(
+    input: "13E",
+    output: Error(UnknownCharacter("E", 2)),
+    python_output: Error(Nil),
+  ),
 ]
 
 const invalid_digit_positions: List(IntegerTestData) = [
@@ -188,45 +228,30 @@ const invalid_decimal_positions: List(IntegerTestData) = [
   ),
 ]
 
-const invalid_exponent_positions: List(IntegerTestData) = [
+const invalid_mixed: List(IntegerTestData) = [
   IntegerTestData(
-    input: "e",
+    input: "e_1_3",
     output: Error(UnknownCharacter("e", 0)),
     python_output: Error(Nil),
   ),
   IntegerTestData(
-    input: "E",
-    output: Error(UnknownCharacter("E", 0)),
+    input: "1_3_e",
+    output: Error(InvalidUnderscorePosition(3)),
     python_output: Error(Nil),
   ),
   IntegerTestData(
-    input: "e13",
-    output: Error(UnknownCharacter("e", 0)),
+    input: "1._3_e",
+    output: Error(InvalidDecimalPosition(1)),
     python_output: Error(Nil),
   ),
   IntegerTestData(
-    input: "1e3",
-    output: Error(UnknownCharacter("e", 1)),
+    input: "1+._3_e",
+    output: Error(InvalidSignPosition("+", 1)),
     python_output: Error(Nil),
   ),
   IntegerTestData(
-    input: "13e",
-    output: Error(UnknownCharacter("e", 2)),
-    python_output: Error(Nil),
-  ),
-  IntegerTestData(
-    input: "E13",
-    output: Error(UnknownCharacter("E", 0)),
-    python_output: Error(Nil),
-  ),
-  IntegerTestData(
-    input: "1E3",
-    output: Error(UnknownCharacter("E", 1)),
-    python_output: Error(Nil),
-  ),
-  IntegerTestData(
-    input: "13E",
-    output: Error(UnknownCharacter("E", 2)),
+    input: "1 1+._3_e",
+    output: Error(InvalidDigitPosition("1", 2)),
     python_output: Error(Nil),
   ),
 ]
@@ -239,7 +264,7 @@ pub fn data() -> List(IntegerTestData) {
     invalid_digit_positions,
     invalid_sign_positions,
     invalid_decimal_positions,
-    invalid_exponent_positions,
+    invalid_mixed,
   ]
   |> list.flatten
 }
