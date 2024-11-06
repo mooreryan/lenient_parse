@@ -65,9 +65,9 @@ pub fn to_string(error: ParseError) -> String {
       <> digit
       <> "\" at invalid position: "
       <> index |> int.to_string
-    InvalidExponentSymbolPosition(exponent, index) ->
+    InvalidExponentSymbolPosition(exponent_symbol, index) ->
       "exponent symbol \""
-      <> exponent
+      <> exponent_symbol
       <> "\" at invalid position: "
       <> index |> int.to_string
     UnknownCharacter(character, index) ->
