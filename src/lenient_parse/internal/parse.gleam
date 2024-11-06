@@ -329,7 +329,7 @@ fn form_float(
   let fractional_float =
     fractional_digit
     |> int.to_float
-    |> normalize_fractional(fractional_length)
+    |> power(-fractional_length)
   let float_value = whole_float +. fractional_float
   let float_value = case is_positive {
     True -> float_value
@@ -342,13 +342,6 @@ fn form_float(
   }
 
   power(float_value, exponent_digit)
-}
-
-fn normalize_fractional(fractional: Float, fractional_length: Int) -> Float {
-  case fractional_length <= 0 {
-    True -> fractional
-    False -> normalize_fractional(fractional /. 10.0, fractional_length - 1)
-  }
 }
 
 fn power(base: Float, exponent: Int) {
