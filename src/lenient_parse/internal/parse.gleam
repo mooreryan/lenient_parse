@@ -74,34 +74,25 @@ pub fn parse_float(input: String) -> Result(Float, ParseError) {
   let trailing_whitespace_result = parse_whitespace(tokens, index)
   use #(_, tokens, index) <- result.try(trailing_whitespace_result)
 
-  case tokens |> list.first {
-    Ok(token) -> Error(token.to_error(token, index))
-    _ -> {
-      case whole_digit, fractional_digit {
-        None, None -> {
-          use <- bool.guard(
-            decimal_specified,
-            Error(InvalidDecimalPosition(index - 1)),
-          )
+  let remaining_token_result = case tokens {
+    [] -> Ok(Nil)
+    [token, ..] -> Error(token.to_error(token, index))
+  }
+  use _ <- result.try(remaining_token_result)
 
-          case leading_whitespace {
-            Some(_) -> Error(WhitespaceOnlyString)
-            _ -> Error(EmptyString)
-          }
-        }
-        _, _ -> {
-          form_float(
-            is_positive: is_positive,
-            whole_digit: whole_digit |> option.unwrap(0),
-            fractional_digit: fractional_digit |> option.unwrap(0),
-            fractional_length: fractional_length,
-            exponent_digit_is_positive: exponent_digit_is_positive,
-            exponent_digit: exponent_digit,
-          )
-          |> Ok
-        }
-      }
-    }
+  case leading_whitespace, whole_digit, decimal_specified, fractional_digit {
+    None, None, False, None -> Error(EmptyString)
+    Some(_), None, False, None -> Error(WhitespaceOnlyString)
+    _, None, True, None -> Error(InvalidDecimalPosition(index - 1))
+    _, _, _, _ ->
+      Ok(form_float(
+        is_positive: is_positive,
+        whole_digit: whole_digit |> option.unwrap(0),
+        fractional_digit: fractional_digit |> option.unwrap(0),
+        fractional_length: fractional_length,
+        exponent_digit_is_positive: exponent_digit_is_positive,
+        exponent_digit: exponent_digit,
+      ))
   }
 }
 
@@ -123,19 +114,17 @@ pub fn parse_int(input: String) -> Result(Int, ParseError) {
   let trailing_whitespace_result = parse_whitespace(tokens, index)
   use #(_, tokens, index) <- result.try(trailing_whitespace_result)
 
-  case tokens |> list.first {
-    Ok(token) -> Error(token.to_error(token, index))
-    _ -> {
-      case leading_whitespace, digit {
-        Some(_), Some(digit) | None, Some(digit) ->
-          case is_positive {
-            True -> Ok(digit)
-            False -> Ok(-digit)
-          }
-        Some(_), None -> Error(WhitespaceOnlyString)
-        _, _ -> Error(EmptyString)
-      }
-    }
+  let remaining_token_result = case tokens {
+    [] -> Ok(Nil)
+    [token, ..] -> Error(token.to_error(token, index))
+  }
+  use _ <- result.try(remaining_token_result)
+
+  case is_positive, leading_whitespace, digit {
+    _, None, None -> Error(EmptyString)
+    _, Some(_), None -> Error(WhitespaceOnlyString)
+    True, _, Some(digit) -> Ok(digit)
+    False, _, Some(digit) -> Ok(-digit)
   }
 }
 
