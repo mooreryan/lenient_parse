@@ -62,11 +62,13 @@ pub fn parse_float(input: String) -> Result(Float, ParseError) {
   // Feels a bit hacky :( - Improve this
   let exponent_digit_result = case exponent_symbol {
     Some(exponent_symbol) -> {
-      case parse_digit(tokens, index) {
-        Ok(#(Some(digit), digit_length, tokens, index)) ->
-          Ok(#(digit, digit_length, tokens, index))
-        Error(error) -> Error(error)
-        _ -> Error(InvalidExponentSymbolPosition(exponent_symbol, index - 1))
+      let exponent_digit_result = parse_digit(tokens, index)
+      use #(digit, digit_length, tokens, index) <- result.try(
+        exponent_digit_result,
+      )
+      case digit {
+        Some(digit) -> Ok(#(digit, digit_length, tokens, index))
+        None -> Error(InvalidExponentSymbolPosition(exponent_symbol, index - 1))
       }
     }
     None -> Ok(#(0, 1, tokens, index))
