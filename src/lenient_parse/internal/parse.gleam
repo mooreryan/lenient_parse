@@ -10,6 +10,7 @@ import lenient_parse/internal/token.{
 }
 
 import lenient_parse/internal/tokenizer
+import parse_data.{type ParseData, ParseData}
 import parse_error.{
   type ParseError, EmptyString, InvalidDecimalPosition,
   InvalidExponentSymbolPosition, InvalidUnderscorePosition, UnknownCharacter,
@@ -20,26 +21,24 @@ pub fn parse_float(input: String) -> Result(Float, ParseError) {
   let tokens = input |> tokenizer.tokenize_float
   let index = 0
 
-  let leading_whitespace_result = parse_whitespace(tokens, index)
-  use #(leading_whitespace, tokens, index) <- result.try(
-    leading_whitespace_result,
-  )
+  let parse_data = parse_whitespace(tokens, index)
+  use ParseData(leading_whitespace, tokens, index) <- result.try(parse_data)
 
-  let sign_result = parse_sign(tokens, index)
-  use #(is_positive, tokens, index) <- result.try(sign_result)
+  let parse_data = parse_sign(tokens, index)
+  use ParseData(is_positive, tokens, index) <- result.try(parse_data)
 
-  let whole_digit_result = parse_digit(tokens, index)
-  use #(whole_digit, _, tokens, index) <- result.try(whole_digit_result)
+  let parse_data = parse_digit(tokens, index)
+  use ParseData(#(whole_digit, _), tokens, index) <- result.try(parse_data)
 
-  let decimal_result = parse_decimal_point(tokens, index)
-  use #(decimal_specified, tokens, index) <- result.try(decimal_result)
+  let parse_data = parse_decimal_point(tokens, index)
+  use ParseData(decimal_specified, tokens, index) <- result.try(parse_data)
 
-  let fractional_digit_result = case decimal_specified {
+  let parse_data = case decimal_specified {
     True -> parse_digit(tokens, index)
-    False -> Ok(#(None, 0, tokens, index))
+    False -> Ok(ParseData(#(None, 0), tokens, index))
   }
-  use #(fractional_digit, fractional_length, tokens, index) <- result.try(
-    fractional_digit_result,
+  use ParseData(#(fractional_digit, fractional_length), tokens, index) <- result.try(
+    parse_data,
   )
 
   let missing_digit_parts =
@@ -49,41 +48,42 @@ pub fn parse_float(input: String) -> Result(Float, ParseError) {
     Error(InvalidDecimalPosition(index - 1)),
   )
 
-  let exponent_symbol_result = parse_exponent_symbol(tokens, index)
-  use #(exponent_symbol, tokens, index) <- result.try(exponent_symbol_result)
+  let parse_data = parse_exponent_symbol(tokens, index)
+  use ParseData(exponent_symbol, tokens, index) <- result.try(parse_data)
 
-  let scientific_notation_result = case missing_digit_parts, exponent_symbol {
+  let parse_data = case missing_digit_parts, exponent_symbol {
     True, Some(exponent_symbol) ->
       Error(InvalidExponentSymbolPosition(exponent_symbol, index - 1))
-    _, None -> Ok(#(0, True, tokens, index))
+    _, None -> Ok(ParseData(#(0, True), tokens, index))
     _, Some(exponent_symbol) -> {
-      let exponent_sign_result = parse_sign(tokens, index)
-      use #(exponent_digit_is_positive, tokens, index) <- result.try(
-        exponent_sign_result,
+      let parse_data = parse_sign(tokens, index)
+      use ParseData(exponent_digit_is_positive, tokens, index) <- result.try(
+        parse_data,
       )
 
-      let exponent_digit_result = parse_digit(tokens, index)
-      use #(digit, digit_length, tokens, index) <- result.try(
-        exponent_digit_result,
+      let parse_data = parse_digit(tokens, index)
+      use ParseData(#(exponent_digit, exponent_digit_length), tokens, index) <- result.try(
+        parse_data,
       )
 
-      let exponent_digit_result = case digit {
-        Some(digit) -> Ok(#(digit, digit_length, tokens, index))
+      let parse_data = case exponent_digit {
+        Some(exponent_digit) ->
+          Ok(ParseData(#(exponent_digit, exponent_digit_length), tokens, index))
         None -> Error(InvalidExponentSymbolPosition(exponent_symbol, index - 1))
       }
-      use #(exponent_digit, _, tokens, index) <- result.try(
-        exponent_digit_result,
+      use ParseData(#(exponent_digit, _), tokens, index) <- result.try(
+        parse_data,
       )
 
-      Ok(#(exponent_digit, exponent_digit_is_positive, tokens, index))
+      Ok(ParseData(#(exponent_digit, exponent_digit_is_positive), tokens, index))
     }
   }
-  use #(exponent_digit, exponent_digit_is_positive, tokens, index) <- result.try(
-    scientific_notation_result,
+  use ParseData(#(exponent_digit, exponent_digit_is_positive), tokens, index) <- result.try(
+    parse_data,
   )
 
-  let trailing_whitespace_result = parse_whitespace(tokens, index)
-  use #(_, tokens, index) <- result.try(trailing_whitespace_result)
+  let parse_data = parse_whitespace(tokens, index)
+  use ParseData(_, tokens, index) <- result.try(parse_data)
 
   let remaining_token_result = case tokens {
     [] -> Ok(Nil)
@@ -110,19 +110,17 @@ pub fn parse_int(input: String) -> Result(Int, ParseError) {
   let tokens = input |> tokenizer.tokenize_int
   let index = 0
 
-  let leading_whitespace_result = parse_whitespace(tokens, index)
-  use #(leading_whitespace, tokens, index) <- result.try(
-    leading_whitespace_result,
-  )
+  let parse_data = parse_whitespace(tokens, index)
+  use ParseData(leading_whitespace, tokens, index) <- result.try(parse_data)
 
-  let sign_result = parse_sign(tokens, index)
-  use #(is_positive, tokens, index) <- result.try(sign_result)
+  let parse_data = parse_sign(tokens, index)
+  use ParseData(is_positive, tokens, index) <- result.try(parse_data)
 
-  let digit_result = parse_digit(tokens, index)
-  use #(digit, _, tokens, index) <- result.try(digit_result)
+  let parse_data = parse_digit(tokens, index)
+  use ParseData(#(digit, _), tokens, index) <- result.try(parse_data)
 
-  let trailing_whitespace_result = parse_whitespace(tokens, index)
-  use #(_, tokens, index) <- result.try(trailing_whitespace_result)
+  let parse_data = parse_whitespace(tokens, index)
+  use ParseData(_, tokens, index) <- result.try(parse_data)
 
   let remaining_token_result = case tokens {
     [] -> Ok(Nil)
@@ -141,7 +139,7 @@ pub fn parse_int(input: String) -> Result(Int, ParseError) {
 fn parse_whitespace(
   tokens: List(Token),
   index: Int,
-) -> Result(#(Option(String), List(Token), Int), ParseError) {
+) -> Result(ParseData(Option(String)), ParseError) {
   do_parse_whitespace(tokens: tokens, index: index, acc: "")
 }
 
@@ -149,7 +147,7 @@ fn do_parse_whitespace(
   tokens tokens: List(Token),
   index index: Int,
   acc acc: String,
-) -> Result(#(Option(String), List(Token), Int), ParseError) {
+) -> Result(ParseData(Option(String)), ParseError) {
   case tokens {
     [Unknown(character), ..] -> Error(UnknownCharacter(character, index))
     [Whitespace(whitespace), ..rest] ->
@@ -159,10 +157,12 @@ fn do_parse_whitespace(
         acc: acc <> whitespace,
       )
     _ -> {
-      case acc {
-        "" -> Ok(#(None, tokens, index))
-        _ -> Ok(#(Some(acc), tokens, index))
+      let data = case acc {
+        "" -> None
+        _ -> Some(acc)
       }
+
+      Ok(ParseData(data: data, tokens: tokens, index: index))
     }
   }
 }
@@ -170,40 +170,43 @@ fn do_parse_whitespace(
 fn parse_sign(
   tokens: List(Token),
   index: Int,
-) -> Result(#(Bool, List(Token), Int), ParseError) {
+) -> Result(ParseData(Bool), ParseError) {
   case tokens {
     [Unknown(character), ..] -> Error(UnknownCharacter(character, index))
-    [Sign(_, is_positive), ..rest] -> Ok(#(is_positive, rest, index + 1))
-    _ -> Ok(#(True, tokens, index))
+    [Sign(_, is_positive), ..rest] ->
+      Ok(ParseData(data: is_positive, tokens: rest, index: index + 1))
+    _ -> Ok(ParseData(data: True, tokens: tokens, index: index))
   }
 }
 
 fn parse_decimal_point(
   tokens: List(Token),
   index: Int,
-) -> Result(#(Bool, List(Token), Int), ParseError) {
+) -> Result(ParseData(Bool), ParseError) {
   case tokens {
     [Unknown(character), ..] -> Error(UnknownCharacter(character, index))
-    [DecimalPoint, ..rest] -> Ok(#(True, rest, index + 1))
-    _ -> Ok(#(False, tokens, index))
+    [DecimalPoint, ..rest] ->
+      Ok(ParseData(data: True, tokens: rest, index: index + 1))
+    _ -> Ok(ParseData(data: False, tokens: tokens, index: index))
   }
 }
 
 fn parse_exponent_symbol(
   tokens: List(Token),
   index: Int,
-) -> Result(#(Option(String), List(Token), Int), ParseError) {
+) -> Result(ParseData(Option(String)), ParseError) {
   case tokens {
     [Unknown(character), ..] -> Error(UnknownCharacter(character, index))
-    [Exponent(exponent), ..rest] -> Ok(#(Some(exponent), rest, index + 1))
-    _ -> Ok(#(None, tokens, index))
+    [Exponent(exponent), ..rest] ->
+      Ok(ParseData(data: Some(exponent), tokens: rest, index: index + 1))
+    _ -> Ok(ParseData(data: None, tokens: tokens, index: index))
   }
 }
 
 fn parse_digit(
   tokens: List(Token),
   index: Int,
-) -> Result(#(Option(Int), Int, List(Token), Int), ParseError) {
+) -> Result(ParseData(#(Option(Int), Int)), ParseError) {
   do_parse_digit(
     tokens: tokens,
     index: index,
@@ -219,7 +222,7 @@ fn do_parse_digit(
   acc acc: Int,
   at_beginning at_beginning: Bool,
   digit_length digit_length: Int,
-) -> Result(#(Option(Int), Int, List(Token), Int), ParseError) {
+) -> Result(ParseData(#(Option(Int), Int)), ParseError) {
   case tokens {
     [Unknown(character), ..] -> Error(UnknownCharacter(character, index))
     [Whitespace(whitespace), ..] if at_beginning ->
@@ -262,10 +265,12 @@ fn do_parse_digit(
         digit_length: digit_length + 1,
       )
     _ -> {
-      case digit_length > 0 {
-        True -> Ok(#(Some(acc), digit_length, tokens, index))
-        False -> Ok(#(None, digit_length, tokens, index))
+      let acc = case digit_length > 0 {
+        True -> Some(acc)
+        False -> None
       }
+
+      Ok(ParseData(data: #(acc, digit_length), tokens: tokens, index: index))
     }
   }
 }
