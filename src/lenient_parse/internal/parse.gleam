@@ -151,26 +151,17 @@ fn do_parse_whitespace(
   acc acc: String,
 ) -> Result(#(Option(String), List(Token), Int), ParseError) {
   case tokens {
-    [] ->
+    [Unknown(character), ..] -> Error(UnknownCharacter(character, index))
+    [Whitespace(whitespace), ..rest] ->
+      do_parse_whitespace(
+        tokens: rest,
+        index: index + 1,
+        acc: acc <> whitespace,
+      )
+    _ -> {
       case acc {
         "" -> Ok(#(None, tokens, index))
         _ -> Ok(#(Some(acc), tokens, index))
-      }
-    [first, ..rest] -> {
-      case first {
-        Unknown(character) -> Error(UnknownCharacter(character, index))
-        Whitespace(whitespace) ->
-          do_parse_whitespace(
-            tokens: rest,
-            index: index + 1,
-            acc: acc <> whitespace,
-          )
-        _ -> {
-          case acc {
-            "" -> Ok(#(None, tokens, index))
-            _ -> Ok(#(Some(acc), tokens, index))
-          }
-        }
       }
     }
   }
@@ -181,14 +172,9 @@ fn parse_sign(
   index: Int,
 ) -> Result(#(Bool, List(Token), Int), ParseError) {
   case tokens {
-    [] -> Ok(#(True, tokens, index))
-    [first, ..rest] -> {
-      case first {
-        Unknown(character) -> Error(UnknownCharacter(character, index))
-        Sign(_, is_positive) -> Ok(#(is_positive, rest, index + 1))
-        _ -> Ok(#(True, tokens, index))
-      }
-    }
+    [Unknown(character), ..] -> Error(UnknownCharacter(character, index))
+    [Sign(_, is_positive), ..rest] -> Ok(#(is_positive, rest, index + 1))
+    _ -> Ok(#(True, tokens, index))
   }
 }
 
@@ -197,14 +183,9 @@ fn parse_decimal_point(
   index: Int,
 ) -> Result(#(Bool, List(Token), Int), ParseError) {
   case tokens {
-    [] -> Ok(#(False, tokens, index))
-    [first, ..rest] -> {
-      case first {
-        Unknown(character) -> Error(UnknownCharacter(character, index))
-        DecimalPoint -> Ok(#(True, rest, index + 1))
-        _ -> Ok(#(False, tokens, index))
-      }
-    }
+    [Unknown(character), ..] -> Error(UnknownCharacter(character, index))
+    [DecimalPoint, ..rest] -> Ok(#(True, rest, index + 1))
+    _ -> Ok(#(False, tokens, index))
   }
 }
 
@@ -213,14 +194,9 @@ fn parse_exponent_symbol(
   index: Int,
 ) -> Result(#(Option(String), List(Token), Int), ParseError) {
   case tokens {
-    [] -> Ok(#(None, tokens, index))
-    [first, ..rest] -> {
-      case first {
-        Unknown(character) -> Error(UnknownCharacter(character, index))
-        Exponent(exponent) -> Ok(#(Some(exponent), rest, index + 1))
-        _ -> Ok(#(None, tokens, index))
-      }
-    }
+    [Unknown(character), ..] -> Error(UnknownCharacter(character, index))
+    [Exponent(exponent), ..rest] -> Ok(#(Some(exponent), rest, index + 1))
+    _ -> Ok(#(None, tokens, index))
   }
 }
 
@@ -245,12 +221,10 @@ fn do_parse_digit(
   digit_length digit_length: Int,
 ) -> Result(#(Option(Int), Int, List(Token), Int), ParseError) {
   case tokens {
-    [] ->
-      case digit_length > 0 {
-        True -> Ok(#(Some(acc), digit_length, tokens, index))
-        False -> Ok(#(None, digit_length, tokens, index))
-      }
-    [first, ..rest] -> {
+    [Unknown(character), ..] -> Error(UnknownCharacter(character, index))
+    [Whitespace(whitespace), ..] if at_beginning ->
+      Error(UnknownCharacter(whitespace, index))
+    [Underscore, ..rest] -> {
       let lookahead = rest |> list.first
       let at_end = case lookahead {
         Ok(Digit(_)) -> False
@@ -261,38 +235,36 @@ fn do_parse_digit(
         _ -> False
       }
 
-      case first {
-        Unknown(character) -> Error(UnknownCharacter(character, index))
-        Digit(digit) -> {
-          do_parse_digit(
-            tokens: rest,
-            index: index + 1,
-            acc: acc * 10 + digit,
-            at_beginning: False,
-            digit_length: digit_length + 1,
-          )
-        }
-        Underscore if next_is_underscore ->
-          Error(InvalidUnderscorePosition(index + 1))
-        Underscore if at_beginning || at_end ->
-          Error(InvalidUnderscorePosition(index))
-        Underscore -> {
-          do_parse_digit(
-            tokens: rest,
-            index: index + 1,
-            acc: acc,
-            at_beginning: False,
-            digit_length: digit_length,
-          )
-        }
-        Whitespace(whitespace) if at_beginning ->
-          Error(UnknownCharacter(whitespace, index))
-        _ -> {
-          case digit_length > 0 {
-            True -> Ok(#(Some(acc), digit_length, tokens, index))
-            False -> Ok(#(None, digit_length, tokens, index))
-          }
-        }
+      use <- bool.guard(
+        next_is_underscore,
+        Error(InvalidUnderscorePosition(index + 1)),
+      )
+
+      use <- bool.guard(
+        at_beginning || at_end,
+        Error(InvalidUnderscorePosition(index)),
+      )
+
+      do_parse_digit(
+        tokens: rest,
+        index: index + 1,
+        acc: acc,
+        at_beginning: False,
+        digit_length: digit_length,
+      )
+    }
+    [Digit(digit), ..rest] ->
+      do_parse_digit(
+        tokens: rest,
+        index: index + 1,
+        acc: acc * 10 + digit,
+        at_beginning: False,
+        digit_length: digit_length + 1,
+      )
+    _ -> {
+      case digit_length > 0 {
+        True -> Ok(#(Some(acc), digit_length, tokens, index))
+        False -> Ok(#(None, digit_length, tokens, index))
       }
     }
   }
