@@ -3,14 +3,16 @@ import gleam/int
 import gleam/list
 import gleam/option.{type Option, None, Some}
 import gleam/order
+import gleam/queue.{type Queue}
 import gleam/result
+import lenient_parse/internal/scale
 import lenient_parse/internal/token.{
   type Token, DecimalPoint, Digit, Exponent, Sign, Underscore, Unknown,
   Whitespace,
 }
 
+import lenient_parse/internal/parse_data.{type ParseData, ParseData}
 import lenient_parse/internal/tokenizer
-import parse_data.{type ParseData, ParseData}
 import parse_error.{
   type ParseError, EmptyString, InvalidDecimalPosition,
   InvalidExponentSymbolPosition, InvalidUnderscorePosition, UnknownCharacter,
@@ -27,22 +29,20 @@ pub fn parse_float(input: String) -> Result(Float, ParseError) {
   let parse_data = parse_sign(tokens, index)
   use ParseData(is_positive, tokens, index) <- result.try(parse_data)
 
-  let parse_data = parse_digit(tokens, index)
-  use ParseData(#(whole_digit, _), tokens, index) <- result.try(parse_data)
+  let parse_data = parse_digits(tokens, index)
+  use ParseData(whole_digits, tokens, index) <- result.try(parse_data)
 
   let parse_data = parse_decimal_point(tokens, index)
   use ParseData(decimal_specified, tokens, index) <- result.try(parse_data)
 
   let parse_data = case decimal_specified {
-    True -> parse_digit(tokens, index)
-    False -> Ok(ParseData(#(None, 0), tokens, index))
+    True -> parse_digits(tokens, index)
+    False -> Ok(ParseData(queue.new(), tokens, index))
   }
-  use ParseData(#(fractional_digit, fractional_length), tokens, index) <- result.try(
-    parse_data,
-  )
+  use ParseData(fractional_digits, tokens, index) <- result.try(parse_data)
 
   let missing_digit_parts =
-    option.is_none(whole_digit) && option.is_none(fractional_digit)
+    queue.is_empty(whole_digits) && queue.is_empty(fractional_digits)
   use <- bool.guard(
     missing_digit_parts && decimal_specified,
     Error(InvalidDecimalPosition(index - 1)),
@@ -54,33 +54,32 @@ pub fn parse_float(input: String) -> Result(Float, ParseError) {
   let parse_data = case missing_digit_parts, exponent_symbol {
     True, Some(exponent_symbol) ->
       Error(InvalidExponentSymbolPosition(exponent_symbol, index - 1))
-    _, None -> Ok(ParseData(#(0, True), tokens, index))
+    _, None -> Ok(ParseData(0, tokens, index))
     _, Some(exponent_symbol) -> {
       let parse_data = parse_sign(tokens, index)
       use ParseData(exponent_digit_is_positive, tokens, index) <- result.try(
         parse_data,
       )
 
-      let parse_data = parse_digit(tokens, index)
-      use ParseData(#(exponent_digit, exponent_digit_length), tokens, index) <- result.try(
-        parse_data,
-      )
+      let parse_data = parse_digits(tokens, index)
+      use ParseData(exponent_digits, tokens, index) <- result.try(parse_data)
 
-      let parse_data = case exponent_digit {
-        Some(exponent_digit) ->
-          Ok(ParseData(#(exponent_digit, exponent_digit_length), tokens, index))
-        None -> Error(InvalidExponentSymbolPosition(exponent_symbol, index - 1))
+      let parse_data = case exponent_digits |> queue.is_empty {
+        True -> Error(InvalidExponentSymbolPosition(exponent_symbol, index - 1))
+        False -> Ok(ParseData(exponent_digits, tokens, index))
       }
-      use ParseData(#(exponent_digit, _), tokens, index) <- result.try(
-        parse_data,
-      )
+      use ParseData(exponent_digits, tokens, index) <- result.try(parse_data)
 
-      Ok(ParseData(#(exponent_digit, exponent_digit_is_positive), tokens, index))
+      let exponent_digit = exponent_digits |> digits_to_int
+      let exponent = case exponent_digit_is_positive {
+        True -> exponent_digit
+        False -> -exponent_digit
+      }
+
+      Ok(ParseData(exponent, tokens, index))
     }
   }
-  use ParseData(#(exponent_digit, exponent_digit_is_positive), tokens, index) <- result.try(
-    parse_data,
-  )
+  use ParseData(exponent, tokens, index) <- result.try(parse_data)
 
   let parse_data = parse_whitespace(tokens, index)
   use ParseData(_, tokens, index) <- result.try(parse_data)
@@ -91,17 +90,15 @@ pub fn parse_float(input: String) -> Result(Float, ParseError) {
   }
   use _ <- result.try(remaining_token_result)
 
-  case leading_whitespace, whole_digit, fractional_digit {
-    None, None, None -> Error(EmptyString)
-    Some(_), None, None -> Error(WhitespaceOnlyString)
-    _, _, _ ->
+  case leading_whitespace, missing_digit_parts {
+    None, True -> Error(EmptyString)
+    Some(_), True -> Error(WhitespaceOnlyString)
+    _, _ ->
       Ok(form_float(
         is_positive: is_positive,
-        whole_digit: whole_digit |> option.unwrap(0),
-        fractional_digit: fractional_digit |> option.unwrap(0),
-        fractional_length: fractional_length,
-        exponent_digit_is_positive: exponent_digit_is_positive,
-        exponent_digit: exponent_digit,
+        whole_digits: whole_digits,
+        fractional_digits: fractional_digits,
+        exponent: exponent,
       ))
   }
 }
@@ -116,8 +113,8 @@ pub fn parse_int(input: String) -> Result(Int, ParseError) {
   let parse_data = parse_sign(tokens, index)
   use ParseData(is_positive, tokens, index) <- result.try(parse_data)
 
-  let parse_data = parse_digit(tokens, index)
-  use ParseData(#(digit, _), tokens, index) <- result.try(parse_data)
+  let parse_data = parse_digits(tokens, index)
+  use ParseData(digits, tokens, index) <- result.try(parse_data)
 
   let parse_data = parse_whitespace(tokens, index)
   use ParseData(_, tokens, index) <- result.try(parse_data)
@@ -128,11 +125,17 @@ pub fn parse_int(input: String) -> Result(Int, ParseError) {
   }
   use _ <- result.try(remaining_token_result)
 
-  case is_positive, leading_whitespace, digit {
-    _, None, None -> Error(EmptyString)
-    _, Some(_), None -> Error(WhitespaceOnlyString)
-    True, _, Some(digit) -> Ok(digit)
-    False, _, Some(digit) -> Ok(-digit)
+  case leading_whitespace, digits |> queue.is_empty {
+    None, True -> Error(EmptyString)
+    Some(_), True -> Error(WhitespaceOnlyString)
+    _, False -> {
+      let value = digits |> digits_to_int
+      let value = case is_positive {
+        True -> value
+        False -> -value
+      }
+      Ok(value)
+    }
   }
 }
 
@@ -203,26 +206,24 @@ fn parse_exponent_symbol(
   }
 }
 
-fn parse_digit(
+fn parse_digits(
   tokens: List(Token),
   index: Int,
-) -> Result(ParseData(#(Option(Int), Int)), ParseError) {
-  do_parse_digit(
+) -> Result(ParseData(Queue(Int)), ParseError) {
+  do_parse_digits(
     tokens: tokens,
     index: index,
-    acc: 0,
+    acc: queue.new(),
     at_beginning: True,
-    digit_length: 0,
   )
 }
 
-fn do_parse_digit(
+fn do_parse_digits(
   tokens tokens: List(Token),
   index index: Int,
-  acc acc: Int,
+  acc acc: Queue(Int),
   at_beginning at_beginning: Bool,
-  digit_length digit_length: Int,
-) -> Result(ParseData(#(Option(Int), Int)), ParseError) {
+) -> Result(ParseData(Queue(Int)), ParseError) {
   case tokens {
     [Unknown(character), ..] -> Error(UnknownCharacter(character, index))
     [Whitespace(whitespace), ..] if at_beginning ->
@@ -248,58 +249,57 @@ fn do_parse_digit(
         Error(InvalidUnderscorePosition(index)),
       )
 
-      do_parse_digit(
+      do_parse_digits(
         tokens: rest,
         index: index + 1,
         acc: acc,
         at_beginning: False,
-        digit_length: digit_length,
       )
     }
     [Digit(digit), ..rest] ->
-      do_parse_digit(
+      do_parse_digits(
         tokens: rest,
         index: index + 1,
-        acc: acc * 10 + digit,
+        acc: acc |> queue.push_back(digit),
         at_beginning: False,
-        digit_length: digit_length + 1,
       )
-    _ -> {
-      let acc = case digit_length > 0 {
-        True -> Some(acc)
-        False -> None
-      }
-
-      Ok(ParseData(data: #(acc, digit_length), tokens: tokens, index: index))
-    }
+    _ -> Ok(ParseData(data: acc, tokens: tokens, index: index))
   }
 }
 
 fn form_float(
   is_positive is_positive: Bool,
-  whole_digit whole_digit: Int,
-  fractional_digit fractional_digit: Int,
-  fractional_length fractional_length: Int,
-  exponent_digit_is_positive exponent_digit_is_positive: Bool,
-  exponent_digit exponent_digit: Int,
+  whole_digits whole_digits: Queue(Int),
+  fractional_digits fractional_digits: Queue(Int),
+  exponent exponent: Int,
 ) -> Float {
-  let whole_float = whole_digit |> int.to_float
+  let #(whole_digits, fractional_digits) =
+    scale.by_10(whole_digits, fractional_digits, exponent)
+
+  let whole_float = whole_digits |> digits_to_int |> int.to_float
+
+  let fractional_digits_length = fractional_digits |> queue.length
   let fractional_float =
-    fractional_digit
+    fractional_digits
+    |> digits_to_int
     |> int.to_float
-    |> power(-fractional_length)
-  let float_value = whole_float +. fractional_float
-  let float_value = case is_positive {
-    True -> float_value
-    False -> float_value *. -1.0
-  }
+    |> power(-fractional_digits_length)
 
-  let exponent_digit = case exponent_digit_is_positive {
-    True -> exponent_digit
-    False -> exponent_digit * -1
+  case is_positive {
+    True -> whole_float +. fractional_float
+    False -> { whole_float +. fractional_float } *. -1.0
   }
+}
 
-  power(float_value, exponent_digit)
+fn digits_to_int(digits: Queue(Int)) -> Int {
+  do_digits_to_int(digits, 0)
+}
+
+fn do_digits_to_int(digits: Queue(Int), acc: Int) -> Int {
+  case digits |> queue.pop_front {
+    Ok(#(digit, rest)) -> do_digits_to_int(rest, acc * 10 + digit)
+    Error(_) -> acc
+  }
 }
 
 fn power(base: Float, exponent: Int) {

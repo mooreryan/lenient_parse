@@ -77,11 +77,11 @@ const valid_floats_with_exponents: List(TestData(Float)) = [
 ]
 
 const valid_mixed: List(TestData(Float)) = [
-  // TestData(
-  //   input: "   -30.01e-2   ",
-  //   output: Ok(-0.3001),
-  //   python_output: Ok("-0.3001"),
-  // ),
+  TestData(
+    input: "   -30.01e-2   ",
+    output: Ok(-0.3001),
+    python_output: Ok("-0.3001"),
+  ),
   TestData(
     input: "+1_234.567_8e-2",
     output: Ok(12.345678),
