@@ -28,7 +28,7 @@ pub fn main() {
 
   // Parse a more complex float with scientific notation
   "-1_234.567_8e-2" |> lenient_parse.to_float |> io.debug
-  // -> Ok(-12.345678)
+  // Ok(-12.345678)
 
   // --- Integer parsing
 
@@ -40,7 +40,7 @@ pub fn main() {
   "  -123  " |> lenient_parse.to_int |> io.debug
   // Ok(-123)
 
-  // Parse a string containing an integer with an underscores
+  // Parse a string containing an integer with underscores
   "1_000_000" |> lenient_parse.to_int |> io.debug
   // Ok(1000000)
 }
