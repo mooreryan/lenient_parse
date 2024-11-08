@@ -19,29 +19,29 @@ pub fn main() {
   // --- Float parsing
 
   // Parse a string containing an integer
-  "1" |> to_float |> io.debug
+  "1" |> lenient_parse.to_float |> io.debug
   // Ok(1.0)
 
   // Parse a string containing a negative float
-  "-5.001" |> to_float |> io.debug
+  "-5.001" |> lenient_parse.to_float |> io.debug
   // Ok(-5.001)
 
   // Parse a more complex float with scientific notation
-  "-1_234.567_8e-2" |> to_float |> io.debug
+  "-1_234.567_8e-2" |> lenient_parse.to_float |> io.debug
   // -> Ok(-12.345678)
 
   // --- Integer parsing
 
   // Parse a string containing an integer
-  "123" |> to_int |> io.debug
+  "123" |> lenient_parse.to_int |> io.debug
   // Ok(123)
 
   // Parse a string containing a negative integer with surrounding whitespace
-  "  -123  " |> to_int |> io.debug
+  "  -123  " |> lenient_parse.to_int |> io.debug
   // Ok(-123)
 
   // Parse a string containing an integer with an underscores
-  "1_000_000" |> to_int |> io.debug
+  "1_000_000" |> lenient_parse.to_int |> io.debug
   // Ok(1000000)
 }
 ```
