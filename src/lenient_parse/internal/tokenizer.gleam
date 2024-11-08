@@ -1,7 +1,7 @@
 import gleam/list
 import gleam/string
 import lenient_parse/internal/token.{
-  type Token, DecimalPoint, Digit, Exponent, Sign, Underscore, Unknown,
+  type Token, DecimalPoint, Digit, ExponentSymbol, Sign, Underscore, Unknown,
   Whitespace,
 }
 
@@ -20,7 +20,7 @@ fn do_tokenize_float(characters: List(String), acc: List(Token)) -> List(Token) 
       let token = int_token(first)
       let token = case token {
         Unknown(".") -> DecimalPoint
-        Unknown(a) if a == "e" || a == "E" -> Exponent(a)
+        Unknown(a) if a == "e" || a == "E" -> ExponentSymbol(a)
         _ -> token
       }
 

@@ -1,5 +1,5 @@
 import lenient_parse/internal/token.{
-  DecimalPoint, Digit, Exponent, Sign, Underscore, Unknown, Whitespace,
+  DecimalPoint, Digit, ExponentSymbol, Sign, Underscore, Unknown, Whitespace,
 }
 import lenient_parse/internal/tokenizer
 import startest/expect
@@ -26,8 +26,8 @@ pub fn tokenize_float_test() {
     Digit(7),
     Digit(8),
     Digit(9),
-    Exponent("e"),
-    Exponent("E"),
+    ExponentSymbol("e"),
+    ExponentSymbol("E"),
     DecimalPoint,
     Underscore,
     Unknown("a"),

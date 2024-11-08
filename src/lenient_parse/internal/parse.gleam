@@ -7,7 +7,7 @@ import gleam/queue.{type Queue}
 import gleam/result
 import lenient_parse/internal/scale
 import lenient_parse/internal/token.{
-  type Token, DecimalPoint, Digit, Exponent, Sign, Underscore, Unknown,
+  type Token, DecimalPoint, Digit, ExponentSymbol, Sign, Underscore, Unknown,
   Whitespace,
 }
 
@@ -200,8 +200,8 @@ fn parse_exponent_symbol(
 ) -> Result(ParseData(Option(String)), ParseError) {
   case tokens {
     [Unknown(character), ..] -> Error(UnknownCharacter(character, index))
-    [Exponent(exponent), ..rest] ->
-      Ok(ParseData(data: Some(exponent), tokens: rest, index: index + 1))
+    [ExponentSymbol(exponent_symbol), ..rest] ->
+      Ok(ParseData(data: Some(exponent_symbol), tokens: rest, index: index + 1))
     _ -> Ok(ParseData(data: None, tokens: tokens, index: index))
   }
 }

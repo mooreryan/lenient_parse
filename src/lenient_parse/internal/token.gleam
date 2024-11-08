@@ -10,7 +10,7 @@ pub type Token {
   Digit(Int)
   Underscore
   DecimalPoint
-  Exponent(String)
+  ExponentSymbol(String)
   Whitespace(String)
   Unknown(String)
 }
@@ -21,7 +21,7 @@ pub fn to_error(token: Token, index) -> ParseError {
     Digit(digit) -> InvalidDigitPosition(digit |> int.to_string, index)
     Underscore -> InvalidUnderscorePosition(index)
     DecimalPoint -> InvalidDecimalPosition(index)
-    Exponent(exponent_symbol) ->
+    ExponentSymbol(exponent_symbol) ->
       InvalidExponentSymbolPosition(exponent_symbol, index)
     Whitespace(whitespace) -> UnknownCharacter(whitespace, index)
     Unknown(character) -> UnknownCharacter(character, index)
