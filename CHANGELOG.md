@@ -1,9 +1,10 @@
 # Changelog
 
-## v1.1.0 - xxx
+## v1.1.0 - 2024-11-07
 
 - Added support for scientific notation for float parsing.
     - Ex: `lenient_parse.to_float("4e-3")` // Ok(0.004)
+- Implemented a new recursive descent parser.
 - Breaking changes:
     - `GleamIntParseError` and `GleamIntParseErrorReason` have been removed.
     - `InvalidCharacter` has been renamed to `UnknownCharacter`.
