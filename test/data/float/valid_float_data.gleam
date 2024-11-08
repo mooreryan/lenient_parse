@@ -87,6 +87,11 @@ const valid_mixed: List(TestData(Float)) = [
     output: Ok(12.345678),
     python_output: Ok("12.345678"),
   ),
+  TestData(
+    input: "-1_234.567_8e-2",
+    output: Ok(-12.345678),
+    python_output: Ok("-12.345678"),
+  ),
   TestData(input: " -0.000_1E+3 ", output: Ok(-0.1), python_output: Ok("-0.1")),
 ]
 
