@@ -4,6 +4,8 @@ import lenient_parse/internal/token.{
 import lenient_parse/internal/tokenizer
 import startest/expect
 
+// In Python's `float()`, only base 10 is supported. Any letter character
+// (a-z/A-Z), outside of an exponent character, should be considered an Unknown.
 pub fn tokenize_float_test() {
   " \t\n\r\f\r\n+-0123456789eE._abc"
   |> tokenizer.tokenize_float
@@ -36,6 +38,8 @@ pub fn tokenize_float_test() {
   ])
 }
 
+// In Python's `int()`, Letter characters (a-z/A-Z) are all supported given the
+// right base, so we mark these as Digits.
 pub fn tokenize_int_base_10_test() {
   " \t\n\r\f\r\n+-0123456789eE._abcZ"
   |> tokenizer.tokenize_int(base: 10)
