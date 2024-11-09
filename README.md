@@ -3,14 +3,31 @@
 [![Package Version](https://img.shields.io/hexpm/v/lenient_parse)](https://hex.pm/packages/lenient_parse)
 [![Hex Docs](https://img.shields.io/badge/hex-docs-ffaff3)](https://hexdocs.pm/lenient_parse/)
 
-A Gleam library providing lenient parsing functions for converting strings to float and integer values. This package offers more flexible parsing than the standard Gleam functions, similar to Python's built-in `float()` and `int()` functions.
+A Gleam library providing lenient parsing functions for converting strings to
+float and integer values. This package offers more flexible parsing than the
+standard Gleam functions, similar to Python's built-in `float()` and `int()`
+functions.
+
+`lenient_parse`'s [testing is
+extensive](https://github.com/JosephTLyons/lenient_parse/tree/main/test/data).
+Each test input is also processed using Python's (3.13) `float()` and `int()`
+functions. We verify that `lenient_parse` produces the same output as Python. If
+Python's built-ins succeed, `lenient_parse` should also succeed with identical
+results. If Python's built-ins fail to parse, `lenient_parse` should also fail.
+This ensures that `lenient_parse` behaves consistently with Python's built-ins
+for all supplied test data.
+
+To run the tests for this package, you'll need to [install
+`uv`](https://docs.astral.sh/uv/getting-started/installation/).
 
 ## Installation
-
 
 ```sh
 gleam add lenient_parse
 ```
+
+## Usage
+
 ```gleam
 import gleam/float
 import gleam/int
@@ -48,24 +65,19 @@ pub fn main() {
   "1_000_000" |> lenient_parse.to_int |> io.debug // Ok(1000000)
   "1_000_000" |> int.parse |> io.debug // Error(Nil)
 
-  // Parse a binary string
+  // Parse a binary string with underscores
 
   "1000_0000" |> lenient_parse.to_int_with_base(base: 2) |> io.debug // Ok(128)
-  // No direct Gleam stdlib support
+  "1000_0000" |> int.base_parse(2) |> io.debug // Error(Nil)
 
-  // Parse a hexadecimal string
+  // Parse a hexadecimal string with underscores
 
   "DEAD_BEEF" |> lenient_parse.to_int_with_base(base: 16) |> io.debug// Ok(3735928559)
-  // No direct Gleam stdlib support
+  "DEAD_BEEF" |> int.base_parse(16) |> io.debug // Error(Nil)
 
   // Nice errors
 
   "12.3e_3" |> lenient_parse.to_float |> io.debug // Error(InvalidUnderscorePosition(5))
   "12.3e_3" |> float.parse |> io.debug // Error(Nil)
 }
-
 ```
-
-## Developer Setup
-
-To run the tests for this package, you'll need to [install `uv`](https://docs.astral.sh/uv/getting-started/installation/).
