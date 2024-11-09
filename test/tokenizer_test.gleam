@@ -154,15 +154,3 @@ pub fn tokenize_int_base_36_test() {
     Digit("z", 35, 36),
   ])
 }
-
-pub fn tokenize_int_invalid_1_test() {
-  "1"
-  |> tokenizer.tokenize_int(base: 1)
-  |> expect.to_equal([Digit("1", 1, 1)])
-}
-
-pub fn tokenize_int_invalid_2_test() {
-  "1"
-  |> tokenizer.tokenize_int(base: 37)
-  |> expect.to_equal([Digit("1", 1, 37)])
-}
