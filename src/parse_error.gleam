@@ -57,7 +57,7 @@ pub type ParseError {
 
   /// Represents an error when the base provided for parsing is invalid.
   ///
-  /// - `base`: The invalid base as an `Int`. The base must be between 2 and 36 inclusive, or 0.
+  /// - `base`: The invalid base as an `Int`. The base must be between 2 and 36 inclusive.
   InvalidBaseValue(base: Int)
 }
 
