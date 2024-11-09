@@ -12,15 +12,13 @@ import lenient_parse/internal/token.{
 }
 
 import lenient_parse/internal/parse_data.{type ParseData, ParseData}
-import lenient_parse/internal/tokenizer
 import parse_error.{
   type ParseError, EmptyString, InvalidDecimalPosition,
   InvalidExponentSymbolPosition, InvalidUnderscorePosition, OutOfBaseRange,
   UnknownCharacter, WhitespaceOnlyString,
 }
 
-pub fn parse_float(text text: String) -> Result(Float, ParseError) {
-  let tokens = text |> tokenizer.tokenize_float
+pub fn parse_float(tokens tokens: List(Token)) -> Result(Float, ParseError) {
   let index = 0
 
   let parse_data = parse_whitespace(tokens, index)
@@ -103,8 +101,10 @@ pub fn parse_float(text text: String) -> Result(Float, ParseError) {
   }
 }
 
-pub fn parse_int(text text: String, base base: Int) -> Result(Int, ParseError) {
-  let tokens = tokenizer.tokenize_int(text: text, base: base)
+pub fn parse_int(
+  tokens tokens: List(Token),
+  base base: Int,
+) -> Result(Int, ParseError) {
   let index = 0
 
   let parse_data = parse_whitespace(tokens, index)
