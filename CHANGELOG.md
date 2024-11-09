@@ -2,7 +2,8 @@
 
 ## v1.2.0 - XXXX-XXX-XX
 
-- Added a new `OutOfBoundsDigit` error that represents a digit that is higher than the base.
+- Added arbitrary base support for integer parsing - use pub `lenient_parse.to_int_with_base`.
+- Added `OutOfBaseRange` and `InvalidBaseValue` errors.
 
 ## v1.1.0 - 2024-11-07
 
