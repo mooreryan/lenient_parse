@@ -256,14 +256,14 @@ fn do_parse_digits(
         at_beginning: False,
       )
     }
-    [Digit(_, value, True), ..rest] ->
+    [Digit(_, value, base), ..rest] if value < base ->
       do_parse_digits(
         tokens: rest,
         index: index + 1,
         acc: acc |> queue.push_back(value),
         at_beginning: False,
       )
-    [Digit(character, value, False), ..] ->
+    [Digit(character, value, _), ..] ->
       Error(OutOfBaseRange(character, value, index))
     _ -> Ok(ParseData(data: acc, tokens: tokens, index: index))
   }

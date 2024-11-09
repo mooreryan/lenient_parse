@@ -25,8 +25,9 @@ fn do_tokenize_float(
         "_" -> Underscore
         " " | "\n" | "\t" | "\r" | "\f" | "\r\n" -> Whitespace(first)
         _ -> {
+          let base = 10
           case character_to_value(first) {
-            Some(value) if value < 10 -> Digit(first, value, True)
+            Some(value) if value < base -> Digit(first, value, base)
             _ -> Unknown(first)
           }
         }
@@ -55,7 +56,7 @@ fn do_tokenize_int(
         " " | "\n" | "\t" | "\r" | "\f" | "\r\n" -> Whitespace(first)
         _ -> {
           case character_to_value(first) {
-            Some(value) -> Digit(first, value, value < base)
+            Some(value) -> Digit(first, value, base)
             _ -> Unknown(first)
           }
         }

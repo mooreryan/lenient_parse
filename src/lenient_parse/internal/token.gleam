@@ -6,7 +6,7 @@ import parse_error.{
 
 pub type Token {
   Sign(String, Bool)
-  Digit(character: String, value: Int, is_within_base_range: Bool)
+  Digit(character: String, value: Int, base: Int)
   Underscore
   DecimalPoint
   ExponentSymbol(String)
@@ -17,8 +17,9 @@ pub type Token {
 pub fn to_error(token: Token, index) -> ParseError {
   case token {
     Sign(sign, _) -> InvalidSignPosition(sign, index)
-    Digit(character, _, True) -> InvalidDigitPosition(character, index)
-    Digit(character, value, False) -> OutOfBaseRange(character, value, index)
+    Digit(character, value, base) if value >= base ->
+      OutOfBaseRange(character, value, index)
+    Digit(character, _, _) -> InvalidDigitPosition(character, index)
     Underscore -> InvalidUnderscorePosition(index)
     DecimalPoint -> InvalidDecimalPosition(index)
     ExponentSymbol(exponent_symbol) ->
