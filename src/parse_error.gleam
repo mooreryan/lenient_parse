@@ -34,7 +34,8 @@ pub type ParseError {
   /// - `index`: The position of the invalid digit in the input string.
   InvalidDigitPosition(character: String, index: Int)
 
-  /// Represents an error when a digit is out of the valid range for the specified base.
+  /// Represents an error when a digit character is out of the valid range for
+  /// the specified base.
   ///
   /// - `character`: The string representation of the out-of-range digit.
   /// - `value`: The integer value of the out-of-range digit.
@@ -46,7 +47,8 @@ pub type ParseError {
   /// position within the number string.
   ///
   /// - `character`: The exponent symbol that caused the error as a `String`.
-  /// - `index`: The position of the invalid exponent symbol in the input string.
+  /// - `index`: The position of the invalid exponent symbol in the input
+  /// string.
   InvalidExponentSymbolPosition(character: String, index: Int)
 
   /// Represents an error when an invalid character is encountered during
@@ -58,7 +60,8 @@ pub type ParseError {
 
   /// Represents an error when the base provided for parsing is invalid.
   ///
-  /// - `base`: The invalid base as an `Int`. The base must be between 2 and 36 inclusive.
+  /// - `base`: The invalid base as an `Int`. The base must be between 2 and 36
+  /// inclusive.
   InvalidBaseValue(base: Int)
 }
 
