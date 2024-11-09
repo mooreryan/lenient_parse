@@ -159,6 +159,12 @@ const valid_simple_integers_base_2: List(IntegerTestData) = [
     output: Ok(-31),
     python_output: Ok("-31"),
   ),
+  IntegerTestData(
+    input: "  1_1_1  ",
+    base: 2,
+    output: Ok(0b111),
+    python_output: Ok("7"),
+  ),
 ]
 
 const valid_simple_integers_base_8: List(IntegerTestData) = [
