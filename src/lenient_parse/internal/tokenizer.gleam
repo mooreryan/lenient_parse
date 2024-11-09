@@ -21,7 +21,7 @@ fn do_tokenize_float(
       let token = case first {
         "." -> DecimalPoint
         "e" | "E" -> ExponentSymbol(first)
-        _ -> common_token(first, fn(value) { value < base }, base)
+        _ -> common_token(first, fn(digit_value) { digit_value < base }, base)
       }
       do_tokenize_float(characters: rest, acc: [token, ..acc])
     }
