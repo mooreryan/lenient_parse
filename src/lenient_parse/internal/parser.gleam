@@ -11,11 +11,14 @@ import lenient_parse/internal/token.{
   Whitespace,
 }
 
-import lenient_parse/internal/parse_data.{type ParseData, ParseData}
 import parse_error.{
   type ParseError, EmptyString, InvalidDecimalPosition,
   InvalidExponentSymbolPosition, InvalidUnderscorePosition, OutOfBaseRange,
   UnknownCharacter, WhitespaceOnlyString,
+}
+
+type ParseData(t) {
+  ParseData(data: t, tokens: List(Token), index: Int)
 }
 
 pub fn parse_float(tokens tokens: List(Token)) -> Result(Float, ParseError) {
