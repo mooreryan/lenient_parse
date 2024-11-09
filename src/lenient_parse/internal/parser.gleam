@@ -298,18 +298,7 @@ fn digits_to_int(digits digits: Queue(Int)) -> Int {
 }
 
 fn digits_to_int_with_base(digits digits: Queue(Int), base base: Int) -> Int {
-  do_digits_to_int(digits: digits, base: base, acc: 0)
-}
-
-fn do_digits_to_int(
-  digits digits: Queue(Int),
-  base base: Int,
-  acc acc: Int,
-) -> Int {
-  case digits |> queue.pop_front {
-    Ok(#(digit, rest)) -> do_digits_to_int(rest, base, acc * base + digit)
-    Error(_) -> acc
-  }
+  digits |> queue.to_list |> list.fold(0, fn(acc, digit) { acc * base + digit })
 }
 
 fn power(base: Float, exponent: Int) {
