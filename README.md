@@ -43,6 +43,14 @@ pub fn main() {
   // Parse a string containing an integer with underscores
   "1_000_000" |> lenient_parse.to_int |> io.debug
   // Ok(1000000)
+
+  // Parse a binary string
+  "1000_0000" |> lenient_parse.to_int_with_base(base: 2) |> io.debug
+  // Ok(128)
+
+  // Parse a hexadecimal string
+  "DEAD_BEEF" |> lenient_parse.to_int_with_base(base: 16) |> io.debug
+  // Ok(3735928559)
 }
 ```
 
