@@ -104,7 +104,7 @@ pub fn parse_float(text text: String) -> Result(Float, ParseError) {
 }
 
 pub fn parse_int(text text: String, base base: Int) -> Result(Int, ParseError) {
-  use tokens <- result.try(tokenizer.tokenize_int(text: text, base: base))
+  let tokens = tokenizer.tokenize_int(text: text, base: base)
   let index = 0
 
   let parse_data = parse_whitespace(tokens, index)

@@ -1,5 +1,6 @@
+import gleam/bool
 import lenient_parse/internal/parse
-import parse_error.{type ParseError}
+import parse_error.{type ParseError, InvalidBaseValue}
 
 /// Converts a string to a float using a more lenient parsing method than
 /// gleam's `float.parse()`. It behaves similarly to Python's `float()` built-in
@@ -22,5 +23,7 @@ pub fn to_int_with_base(
   text text: String,
   base base: Int,
 ) -> Result(Int, ParseError) {
+  let is_valid_base = base >= 2 && base <= 36
+  use <- bool.guard(!is_valid_base, Error(InvalidBaseValue(base)))
   text |> parse.parse_int(base: base)
 }

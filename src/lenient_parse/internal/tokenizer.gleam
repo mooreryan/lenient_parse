@@ -1,4 +1,3 @@
-import gleam/bool
 import gleam/list
 import gleam/option.{type Option, None, Some}
 import gleam/string
@@ -6,7 +5,6 @@ import lenient_parse/internal/token.{
   type Token, DecimalPoint, Digit, ExponentSymbol, Sign, Underscore, Unknown,
   Whitespace,
 }
-import parse_error.{type ParseError, InvalidBaseValue}
 
 pub fn tokenize_float(text text: String) -> List(Token) {
   text |> string.to_graphemes |> do_tokenize_float([])
@@ -38,12 +36,8 @@ fn do_tokenize_float(
   }
 }
 
-pub fn tokenize_int(
-  text text: String,
-  base base: Int,
-) -> Result(List(Token), ParseError) {
-  use <- bool.guard(base < 2 || base > 36, Error(InvalidBaseValue(base)))
-  text |> string.to_graphemes |> do_tokenize_int(base: base, acc: []) |> Ok
+pub fn tokenize_int(text text: String, base base: Int) -> List(Token) {
+  text |> string.to_graphemes |> do_tokenize_int(base: base, acc: [])
 }
 
 fn do_tokenize_int(
