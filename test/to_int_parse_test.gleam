@@ -21,7 +21,7 @@ pub fn to_int_tests() {
           Ok(output) -> {
             "should_parse: \""
             <> input_printable_text
-            <> "\"  -> "
+            <> "\" -> "
             <> output |> int.to_string
           }
           Error(error) -> {
