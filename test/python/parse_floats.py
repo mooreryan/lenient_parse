@@ -10,8 +10,8 @@ for item in data_list:
 
     try:
         value = float(text)
-    except Exception:
-        value = "Nil"
+    except ValueError:
+        value = "ValueError"
 
     output_values.append(str(value))
 

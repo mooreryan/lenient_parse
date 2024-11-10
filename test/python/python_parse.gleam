@@ -51,7 +51,7 @@ fn parse(
   processed_strings
   |> list.map(fn(value) {
     case value {
-      "Nil" -> Error(Nil)
+      "ValueError" -> Error(Nil)
       _ -> Ok(value)
     }
   })
