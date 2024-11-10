@@ -45,10 +45,10 @@ fn parse(
   let assert Ok(output_json_string) =
     shellout.command(run: "uv", with: arguments, in: ".", opt: [])
 
-  let assert Ok(processed_strings) =
+  let assert Ok(parsed_strings) =
     json.decode(output_json_string, dynamic.list(of: dynamic.string))
 
-  processed_strings
+  parsed_strings
   |> list.map(fn(value) {
     case value {
       "ValueError" -> Error(Nil)
