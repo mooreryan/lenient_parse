@@ -1,34 +1,58 @@
-import gleam/int
+import gleam/dynamic
+import gleam/json
 import gleam/list
-import gleam/option.{type Option, None, Some}
-import gleam/result
 import shellout
+import test_data.{type FloatTestData, type IntegerTestData}
 
-pub fn to_float(text text: String) -> Result(String, Nil) {
-  text |> parse(program_name: "parse_float.py", base: None)
+pub fn to_floats(
+  float_test_data float_test_data: List(FloatTestData),
+) -> List(Result(String, Nil)) {
+  float_test_data
+  |> json.array(fn(float_data) {
+    json.object([#("input", json.string(float_data.input))])
+  })
+  |> json.to_string
+  |> parse(program_name: "parse_floats.py")
 }
 
-pub fn to_int(text text: String, base base: Int) -> Result(String, Nil) {
-  text |> parse(program_name: "parse_int.py", base: Some(base))
+pub fn to_ints(
+  integer_test_data integer_test_data: List(IntegerTestData),
+) -> List(Result(String, Nil)) {
+  integer_test_data
+  |> json.array(fn(integer_data) {
+    json.object([
+      #("input", json.string(integer_data.input)),
+      #("base", json.int(integer_data.base)),
+    ])
+  })
+  |> json.to_string
+  |> parse(program_name: "parse_ints.py")
 }
 
 fn parse(
-  text text: String,
-  base base: Option(Int),
+  input_json_string input_json_string: String,
   program_name program_name: String,
-) -> Result(String, Nil) {
+) -> List(Result(String, Nil)) {
   let arguments = [
     "run",
     "-p",
     "3.13",
     "python",
     "./test/python/" <> program_name,
-    text,
+    input_json_string,
   ]
-  let arguments = case base {
-    Some(base) -> arguments |> list.append([base |> int.to_string])
-    None -> arguments
-  }
-  shellout.command(run: "uv", with: arguments, in: ".", opt: [])
-  |> result.replace_error(Nil)
+
+  let assert Ok(output_json_string) =
+    shellout.command(run: "uv", with: arguments, in: ".", opt: [])
+
+  let assert Ok(processed_strings) =
+    json.decode(output_json_string, dynamic.list(of: dynamic.string))
+
+  processed_strings
+  |> list.map(fn(value) {
+    case value {
+      "Nil" -> Error(Nil)
+      _ -> Ok(value)
+    }
+  })
 }
