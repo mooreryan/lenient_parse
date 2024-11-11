@@ -8,18 +8,6 @@ float and integer values. This package offers more flexible parsing than the
 standard Gleam functions, similar to Python's built-in `float()` and `int()`
 functions.
 
-`lenient_parse`'s [testing is
-extensive](https://github.com/JosephTLyons/lenient_parse/tree/main/test/data).
-Each test input is also processed using Python's (3.13) `float()` and `int()`
-functions. We verify that `lenient_parse` produces the same output as Python. If
-Python's built-ins succeed, `lenient_parse` should also succeed with identical
-results. If Python's built-ins fail to parse, `lenient_parse` should also fail.
-This ensures that `lenient_parse` behaves consistently with Python's built-ins
-for all supplied test data.
-
-To run the tests for this package, you'll need to [install
-`uv`](https://docs.astral.sh/uv/getting-started/installation/).
-
 ## Installation
 
 ```sh
@@ -81,3 +69,17 @@ pub fn main() {
   "12.3e_3" |> float.parse |> io.debug // Error(Nil)
 }
 ```
+
+## Testing
+
+`lenient_parse`'s [testing is
+extensive](https://github.com/JosephTLyons/lenient_parse/tree/main/test/data).
+Each test input is also processed using Python's (3.13) `float()` and `int()`
+functions. We verify that `lenient_parse` produces the same output as Python. If
+Python's built-ins succeed, `lenient_parse` should also succeed with identical
+results. If Python's built-ins fail to parse, `lenient_parse` should also fail.
+This ensures that `lenient_parse` behaves consistently with Python's built-ins
+for all supplied test data.
+
+To run the tests for this package, you'll need to [install
+`uv`](https://docs.astral.sh/uv/getting-started/installation/).
