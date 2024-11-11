@@ -1,7 +1,7 @@
 import gleam/list
 import test_data.{type FloatTestData, FloatTestData}
 
-const valid_simple_floats: List(FloatTestData) = [
+const valid_simple: List(FloatTestData) = [
   FloatTestData(
     input: "1.001",
     expected_program_output: Ok(1.001),
@@ -79,7 +79,7 @@ const valid_simple_floats: List(FloatTestData) = [
   ),
 ]
 
-const valid_floats_with_underscores: List(FloatTestData) = [
+const valid_underscore: List(FloatTestData) = [
   FloatTestData(
     input: "1_000_000.0",
     expected_program_output: Ok(1_000_000.0),
@@ -107,7 +107,7 @@ const valid_floats_with_underscores: List(FloatTestData) = [
   ),
 ]
 
-const valid_floats_with_whitespace: List(FloatTestData) = [
+const valid_whitespace: List(FloatTestData) = [
   FloatTestData(
     input: " 1 ",
     expected_program_output: Ok(1.0),
@@ -135,7 +135,7 @@ const valid_floats_with_whitespace: List(FloatTestData) = [
   ),
 ]
 
-const valid_floats_with_exponents: List(FloatTestData) = [
+const valid_exponent_symbol_position: List(FloatTestData) = [
   FloatTestData(
     input: "4e3",
     expected_program_output: Ok(4000.0),
@@ -238,10 +238,10 @@ const valid_mixed: List(FloatTestData) = [
 
 pub fn data() -> List(FloatTestData) {
   [
-    valid_simple_floats,
-    valid_floats_with_underscores,
-    valid_floats_with_whitespace,
-    valid_floats_with_exponents,
+    valid_simple,
+    valid_underscore,
+    valid_whitespace,
+    valid_exponent_symbol_position,
     valid_mixed,
   ]
   |> list.flatten

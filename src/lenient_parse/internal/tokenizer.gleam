@@ -1,9 +1,12 @@
 import gleam/list
 import gleam/option.{type Option, None, Some}
 import gleam/string
+import lenient_parse/internal/base_constants.{
+  base_0, base_10, base_16, base_2, base_8,
+}
 import lenient_parse/internal/token.{
-  type Token, DecimalPoint, Digit, ExponentSymbol, Sign, Underscore, Unknown,
-  Whitespace,
+  type Token, BasePrefix, DecimalPoint, Digit, ExponentSymbol, Sign, Underscore,
+  Unknown, Whitespace,
 }
 
 pub fn tokenize_float(text text: String) -> List(Token) {
@@ -18,7 +21,6 @@ fn do_tokenize_float(
   case characters {
     [] -> acc |> list.reverse
     [first, ..rest] -> {
-      let base = 10
       let token = case first {
         "." -> DecimalPoint(#(index, index + 1))
         "e" | "E" -> ExponentSymbol(#(index, index + 1), first)
@@ -26,8 +28,9 @@ fn do_tokenize_float(
           common_token(
             character: first,
             index: index,
-            tokenize_character_as_digit: fn(digit_value) { digit_value < base },
-            base: base,
+            tokenize_character_as_digit: fn(digit_value) {
+              digit_value < base_10
+            },
           )
       }
       do_tokenize_float(characters: rest, index: index + 1, acc: [token, ..acc])
@@ -36,38 +39,81 @@ fn do_tokenize_float(
 }
 
 pub fn tokenize_int(text text: String, base base: Int) -> List(Token) {
-  text |> string.to_graphemes |> do_tokenize_int(base: base, index: 0, acc: [])
+  text
+  |> string.to_graphemes
+  |> do_tokenize_int(base: base, index: 0, base_prefix_found: False, acc: [])
 }
 
 fn do_tokenize_int(
   characters characters: List(String),
   base base: Int,
   index index: Int,
+  base_prefix_found base_prefix_found: Bool,
   acc acc: List(Token),
 ) -> List(Token) {
   case characters {
     [] -> acc |> list.reverse
     [first, ..rest] -> {
-      let token =
-        common_token(
-          character: first,
-          index: index,
-          tokenize_character_as_digit: fn(_) { True },
-          base: base,
-        )
-      do_tokenize_int(characters: rest, base: base, index: index + 1, acc: [
-        token,
-        ..acc
-      ])
+      let lookahead = rest |> list.first
+
+      let #(index, token, rest, base_prefix_found) = case
+        base_prefix_found,
+        first,
+        lookahead
+      {
+        False, "0", Ok(specifier)
+          if { base == base_0 || base == base_2 }
+          && { specifier == "b" || specifier == "B" }
+        -> create_base_prefix(index, specifier, base_2, rest)
+        False, "0", Ok(specifier)
+          if { base == base_0 || base == base_8 }
+          && { specifier == "o" || specifier == "O" }
+        -> create_base_prefix(index, specifier, base_8, rest)
+        False, "0", Ok(specifier)
+          if { base == base_0 || base == base_16 }
+          && { specifier == "x" || specifier == "X" }
+        -> create_base_prefix(index, specifier, base_16, rest)
+        _, _, _ -> {
+          let token =
+            common_token(
+              character: first,
+              index: index,
+              tokenize_character_as_digit: fn(_) { True },
+            )
+
+          #(index + 1, token, rest, base_prefix_found)
+        }
+      }
+
+      do_tokenize_int(
+        characters: rest,
+        base: base,
+        index: index,
+        base_prefix_found: base_prefix_found,
+        acc: [token, ..acc],
+      )
     }
   }
+}
+
+fn create_base_prefix(
+  index: Int,
+  specifier: String,
+  base: Int,
+  rest: List(String),
+) -> #(Int, Token, List(String), Bool) {
+  let token = BasePrefix(#(index, index + 2), "0" <> specifier, base)
+  let new_rest = case rest {
+    [] -> []
+    [_, ..rest] -> rest
+  }
+  #(index + 2, token, new_rest, True)
 }
 
 fn common_token(
   character character: String,
   index index: Int,
   tokenize_character_as_digit tokenize_character_as_digit: fn(Int) -> Bool,
-  base base: Int,
 ) -> Token {
   case character {
     "-" -> Sign(#(index, index + 1), "-", False)
@@ -79,7 +125,7 @@ fn common_token(
       case character_to_value(character) {
         Some(value) ->
           case tokenize_character_as_digit(value) {
-            True -> Digit(#(index, index + 1), character, value, base)
+            True -> Digit(#(index, index + 1), character, value)
             False -> Unknown(#(index, index + 1), character)
           }
         None -> Unknown(#(index, index + 1), character)
