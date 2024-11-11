@@ -113,17 +113,17 @@ pub fn parse_int(
   base base: Int,
 ) -> Result(Int, ParseError) {
   let parse_data = parse_whitespace(tokens, 0)
-  use ParseData(leading_whitespace, index_range, tokens) <- result.try(
+  use ParseData(leading_whitespace, next_index, tokens) <- result.try(
     parse_data,
   )
 
-  let parse_data = parse_sign(tokens, index_range)
-  use ParseData(is_positive, index_range, tokens) <- result.try(parse_data)
+  let parse_data = parse_sign(tokens, next_index)
+  use ParseData(is_positive, next_index, tokens) <- result.try(parse_data)
 
-  let parse_data = parse_digits(tokens, index_range)
-  use ParseData(digits, index_range, tokens) <- result.try(parse_data)
+  let parse_data = parse_digits(tokens, next_index)
+  use ParseData(digits, next_index, tokens) <- result.try(parse_data)
 
-  let parse_data = parse_whitespace(tokens, index_range)
+  let parse_data = parse_whitespace(tokens, next_index)
   use ParseData(_, _, tokens) <- result.try(parse_data)
 
   let remaining_token_result = case tokens {
@@ -180,7 +180,7 @@ fn do_parse_whitespace(
 }
 
 fn parse_sign(
-  tokens: List(Token),
+  tokens tokens: List(Token),
   index index: Int,
 ) -> Result(ParseData(Bool), ParseError) {
   case tokens {
@@ -195,7 +195,7 @@ fn parse_sign(
 }
 
 fn parse_decimal_point(
-  tokens: List(Token),
+  tokens tokens: List(Token),
   index index: Int,
 ) -> Result(ParseData(Bool), ParseError) {
   case tokens {
@@ -208,7 +208,7 @@ fn parse_decimal_point(
 }
 
 fn parse_exponent_symbol(
-  tokens: List(Token),
+  tokens tokens: List(Token),
   index index: Int,
 ) -> Result(ParseData(Option(String)), ParseError) {
   case tokens {
@@ -225,7 +225,7 @@ fn parse_exponent_symbol(
 }
 
 fn parse_digits(
-  tokens: List(Token),
+  tokens tokens: List(Token),
   index index: Int,
 ) -> Result(ParseData(Queue(Int)), ParseError) {
   do_parse_digits(
