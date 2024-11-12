@@ -3,10 +3,13 @@
 [![Package Version](https://img.shields.io/hexpm/v/lenient_parse)](https://hex.pm/packages/lenient_parse)
 [![Hex Docs](https://img.shields.io/badge/hex-docs-ffaff3)](https://hexdocs.pm/lenient_parse/)
 
-A Gleam library providing lenient parsing functions for converting strings to
-float and integer values. This package offers more flexible parsing than the
-standard Gleam functions, similar to Python's built-in `float()` and `int()`
-functions.
+A Gleam library that replicates the functionality of Python's built-in `float()`
+and `int()` functions for parsing strings into float and integer values. This
+package offers more flexible parsing than the standard Gleam functions.
+
+- `float("3.14")` -> `"3.14" |> lenient_parse.to_float`
+- `int("42")` -> `"42" |> lenient_parse.to_int`
+- `int("1010", base=2)` -> `"1010" |> lenient_parse.to_int_with_base(base: 2)`
 
 ## Installation
 
@@ -86,16 +89,15 @@ pub fn main() {
 }
 ```
 
-## Rigorous Testing
+## [Rigorous Testing](https://github.com/JosephTLyons/lenient_parse/tree/main/test/data)
 
-`lenient_parse`'s [testing is
-extensive](https://github.com/JosephTLyons/lenient_parse/tree/main/test/data).
-Each test input is also processed using Python's (3.13) `float()` and `int()`
-functions. We verify that `lenient_parse` produces the same output as Python. If
-Python's built-ins succeed, `lenient_parse` should also succeed with identical
-results. If Python's built-ins fail to parse, `lenient_parse` should also fail.
-This ensures that `lenient_parse` behaves consistently with Python's built-ins
-for all supplied test data.
+`lenient_parse`'s testing is extensive. Each test input is also processed using
+Python's (3.13) `float()` and `int()` functions. We verify that `lenient_parse`
+produces the same output as Python. If Python's built-ins succeed,
+`lenient_parse` should also succeed with identical results. If Python's
+built-ins fail to parse, `lenient_parse` should also fail. This ensures that
+`lenient_parse` behaves consistently with Python's built-ins for all supplied
+test data.
 
 ## Development
 
