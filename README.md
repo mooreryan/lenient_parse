@@ -68,19 +68,20 @@ pub fn main() {
 
   // Use base 0 to automatically detect the base when parsing strings with prefix indicators
 
-  "0b10" |> lenient_parse.to_int_with_base(0) |> io.debug // Ok(2)
-  "0b10" |> int.base_parse(0) |> io.debug // Error(Nil)
+  let dates = [
+    "0b11011110000", "0o3625", "1865", "0x7bc", "0B11110110001", "1929",
+    "0O3507", "0X7a9", "0b11011111011",
+  ]
 
-  "0o01234" |> lenient_parse.to_int_with_base(0) |> io.debug // Ok(668)
-  "0o01234" |> int.base_parse(0) |> io.debug // Error(Nil)
+  dates
+  |> list.map(lenient_parse.to_int_with_base(_, 0))
+  |> io.debug()
+  // [Ok(1776), Ok(1941), Ok(1865), Ok(1980), Ok(1969), Ok(1929), Ok(1863), Ok(1961), Ok(1787)]
 
-  "0xDEADBEEF" |> lenient_parse.to_int_with_base(0) |> io.debug // Ok(3735928559)
-  "0xDEADBEEF" |> int.base_parse(0) |> io.debug // Error(Nil)
-
-  // If no prefix string is present, base 0 defaults to base 10
-
-  "-4" |> lenient_parse.to_int_with_base(0) |> io.debug // Ok(-4)
-  "-4" |> int.base_parse(0) |> io.debug // Error(Nil)
+  dates
+  |> list.map(int.base_parse(_, 0))
+  |> io.debug()
+  // [Error(Nil), Error(Nil), Error(Nil), Error(Nil), Error(Nil), Error(Nil), Error(Nil), Error(Nil), Error(Nil)]
 
   // Nice errors
 
