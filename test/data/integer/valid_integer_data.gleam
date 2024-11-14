@@ -128,16 +128,44 @@ const valid_simple_base_16: List(IntegerTestData) = [
 ]
 
 const valid_simple_base_prefix: List(IntegerTestData) = [
-  // Base 0, has binary prefix
+  // Base 0, has lowercase binary prefix
   IntegerTestData(
     input: "0b10",
     base: 0,
     expected_program_output: Ok(0b10),
     expected_python_output: Ok("2"),
   ),
-  // Base 0, has prefix, and an underscore between the prefix and the number
+  // Base 0, has uppercase binary prefix
   IntegerTestData(
-    input: "0x_DEAD_BEEF",
+    input: "0B10",
+    base: 0,
+    expected_program_output: Ok(0b10),
+    expected_python_output: Ok("2"),
+  ),
+  // Base 0, has lowercase octal prefix
+  IntegerTestData(
+    input: "0o01234",
+    base: 0,
+    expected_program_output: Ok(0o01234),
+    expected_python_output: Ok("668"),
+  ),
+  // Base 0, has uppercase octal prefix
+  IntegerTestData(
+    input: "0O01234",
+    base: 0,
+    expected_program_output: Ok(0o01234),
+    expected_python_output: Ok("668"),
+  ),
+  // Base 0, has lowercase hexadecimal prefix
+  IntegerTestData(
+    input: "0xDEADBEEF",
+    base: 0,
+    expected_program_output: Ok(0xDEADBEEF),
+    expected_python_output: Ok("3735928559"),
+  ),
+  // Base 0, has uppercase hexadecimal prefix
+  IntegerTestData(
+    input: "0XDEADBEEF",
     base: 0,
     expected_program_output: Ok(0xDEADBEEF),
     expected_python_output: Ok("3735928559"),
@@ -149,39 +177,60 @@ const valid_simple_base_prefix: List(IntegerTestData) = [
     expected_program_output: Ok(6666),
     expected_python_output: Ok("6666"),
   ),
-  // Base 2 and also has binary prefix
+  // Base 0, has lowercase hexadecimal prefix, and an underscore between the prefix and the number
+  IntegerTestData(
+    input: "0x_DEAD_BEEF",
+    base: 0,
+    expected_program_output: Ok(0xDEADBEEF),
+    expected_python_output: Ok("3735928559"),
+  ),
+  // Base 0, has uppercase hexadecimal prefix, and an underscore between the prefix and the number
+  IntegerTestData(
+    input: "0X_DEAD_BEEF",
+    base: 0,
+    expected_program_output: Ok(0xDEADBEEF),
+    expected_python_output: Ok("3735928559"),
+  ),
+  // Base 2 and has lowercase binary prefix
   IntegerTestData(
     input: "0b1001",
     base: 2,
     expected_program_output: Ok(0b1001),
     expected_python_output: Ok("9"),
   ),
-  // Base 8 and also has octal prefix
+  // Base 2 and has uppercase binary prefix
+  IntegerTestData(
+    input: "0B1001",
+    base: 2,
+    expected_program_output: Ok(0b1001),
+    expected_python_output: Ok("9"),
+  ),
+  // Base 8 and has lowercase octal prefix
   IntegerTestData(
     input: "0o777",
     base: 8,
     expected_program_output: Ok(0o777),
     expected_python_output: Ok("511"),
   ),
-  // Base 16 and also has hexadecimal prefix
+  // Base 8 and has uppercase octal prefix
+  IntegerTestData(
+    input: "0O777",
+    base: 8,
+    expected_program_output: Ok(0o777),
+    expected_python_output: Ok("511"),
+  ),
+  // Base 16 and has lowercase hexadecimal prefix
   IntegerTestData(
     input: "0xDEAD_BEEF",
     base: 16,
     expected_program_output: Ok(0xDEAD_BEEF),
     expected_python_output: Ok("3735928559"),
   ),
-  // Base 0, has octal prefix
+  // Base 16 and has uppercase hexadecimal prefix
   IntegerTestData(
-    input: "0o01234",
-    base: 0,
-    expected_program_output: Ok(0o01234),
-    expected_python_output: Ok("668"),
-  ),
-  // Base 0, has hexadecimal prefix
-  IntegerTestData(
-    input: "0xDEADBEEF",
-    base: 0,
-    expected_program_output: Ok(0xDEADBEEF),
+    input: "0XDEAD_BEEF",
+    base: 16,
+    expected_program_output: Ok(0xDEAD_BEEF),
     expected_python_output: Ok("3735928559"),
   ),
 ]
