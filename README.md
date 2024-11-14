@@ -9,7 +9,7 @@ package offers more flexible parsing than the standard Gleam functions.
 
 - `float("3.14")` -> `"3.14" |> lenient_parse.to_float`
 - `int("42")` -> `"42" |> lenient_parse.to_int`
-- `int("1010", base=2)` -> `"1010" |> lenient_parse.to_int_with_base(base: 2)`
+- `int("1010", base=2)` -> `"1010" |> lenient_parse.to_int_with_base(2)`
 
 ## Installation
 
@@ -58,28 +58,28 @@ pub fn main() {
 
   // Parse a string containing a binary number with underscores
 
-  "1000_0000" |> lenient_parse.to_int_with_base(base: 2) |> io.debug // Ok(128)
+  "1000_0000" |> lenient_parse.to_int_with_base(2) |> io.debug // Ok(128)
   "1000_0000" |> int.base_parse(2) |> io.debug // Error(Nil)
 
   // Parse a string containing a hexadecimal number with underscores
 
-  "DEAD_BEEF" |> lenient_parse.to_int_with_base(base: 16) |> io.debug // Ok(3735928559)
+  "DEAD_BEEF" |> lenient_parse.to_int_with_base(16) |> io.debug // Ok(3735928559)
   "DEAD_BEEF" |> int.base_parse(16) |> io.debug // Error(Nil)
 
   // Use base 0 to automatically detect the base when parsing strings with prefix indicators
 
-  "0b10" |> lenient_parse.to_int_with_base(base: 0) |> io.debug // Ok(2)
+  "0b10" |> lenient_parse.to_int_with_base(0) |> io.debug // Ok(2)
   "0b10" |> int.base_parse(0) |> io.debug // Error(Nil)
 
-  "0o01234" |> lenient_parse.to_int_with_base(base: 0) |> io.debug // Ok(668)
+  "0o01234" |> lenient_parse.to_int_with_base(0) |> io.debug // Ok(668)
   "0o01234" |> int.base_parse(0) |> io.debug // Error(Nil)
 
-  "0xDEADBEEF" |> lenient_parse.to_int_with_base(base: 0) |> io.debug // Ok(3735928559)
+  "0xDEADBEEF" |> lenient_parse.to_int_with_base(0) |> io.debug // Ok(3735928559)
   "0xDEADBEEF" |> int.base_parse(0) |> io.debug // Error(Nil)
 
   // If no prefix string is present, base 0 defaults to base 10
 
-  "-4" |> lenient_parse.to_int_with_base(base: 0) |> io.debug // Ok(-4)
+  "-4" |> lenient_parse.to_int_with_base(0) |> io.debug // Ok(-4)
   "-4" |> int.base_parse(0) |> io.debug // Error(Nil)
 
   // Nice errors
