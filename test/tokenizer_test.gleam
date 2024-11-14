@@ -220,32 +220,6 @@ pub fn tokenize_int_with_0x_prefix_and_base_0_test() {
   ])
 }
 
-pub fn tokenize_int_with_no_prefix_and_base_0_test() {
-  "  \n+1990_04_12.0e4 "
-  |> tokenizer.tokenize_int(base: 0)
-  |> expect.to_equal([
-    Whitespace(#(0, 1), " "),
-    Whitespace(#(1, 2), " "),
-    Whitespace(#(2, 3), "\n"),
-    Sign(#(3, 4), "+", True),
-    Digit(#(4, 5), "1", 1),
-    Digit(#(5, 6), "9", 9),
-    Digit(#(6, 7), "9", 9),
-    Digit(#(7, 8), "0", 0),
-    Underscore(#(8, 9)),
-    Digit(#(9, 10), "0", 0),
-    Digit(#(10, 11), "4", 4),
-    Underscore(#(11, 12)),
-    Digit(#(12, 13), "1", 1),
-    Digit(#(13, 14), "2", 2),
-    Unknown(#(14, 15), "."),
-    Digit(#(15, 16), "0", 0),
-    Digit(#(16, 17), "e", 14),
-    Digit(#(17, 18), "4", 4),
-    Whitespace(#(18, 19), " "),
-  ])
-}
-
 pub fn tokenize_int_with_0b_prefix_and_base_2_test() {
   "   0b1010 a"
   |> tokenizer.tokenize_int(base: 2)
@@ -357,6 +331,67 @@ pub fn tokenize_int_with_uppercase_hexadecimal_prefix_and_base_0_test() {
   |> tokenizer.tokenize_int(base: 0)
   |> expect.to_equal([
     BasePrefix(#(0, 2), "0X", 16),
+    Digit(#(2, 3), "A", 10),
+    Digit(#(3, 4), "B", 11),
+    Digit(#(4, 5), "C", 12),
+  ])
+}
+
+pub fn tokenize_int_with_no_prefix_and_base_0_test() {
+  "  \n+1990_04_12.0e4 "
+  |> tokenizer.tokenize_int(base: 0)
+  |> expect.to_equal([
+    Whitespace(#(0, 1), " "),
+    Whitespace(#(1, 2), " "),
+    Whitespace(#(2, 3), "\n"),
+    Sign(#(3, 4), "+", True),
+    Digit(#(4, 5), "1", 1),
+    Digit(#(5, 6), "9", 9),
+    Digit(#(6, 7), "9", 9),
+    Digit(#(7, 8), "0", 0),
+    Underscore(#(8, 9)),
+    Digit(#(9, 10), "0", 0),
+    Digit(#(10, 11), "4", 4),
+    Underscore(#(11, 12)),
+    Digit(#(12, 13), "1", 1),
+    Digit(#(13, 14), "2", 2),
+    Unknown(#(14, 15), "."),
+    Digit(#(15, 16), "0", 0),
+    Digit(#(16, 17), "e", 14),
+    Digit(#(17, 18), "4", 4),
+    Whitespace(#(18, 19), " "),
+  ])
+}
+
+// ---- Tests for matching base prefixes and specified bases
+
+pub fn tokenize_int_with_base_2_and_binary_prefix_test() {
+  "0b101"
+  |> tokenizer.tokenize_int(base: 2)
+  |> expect.to_equal([
+    BasePrefix(#(0, 2), "0b", 2),
+    Digit(#(2, 3), "1", 1),
+    Digit(#(3, 4), "0", 0),
+    Digit(#(4, 5), "1", 1),
+  ])
+}
+
+pub fn tokenize_int_with_base_8_and_octal_prefix_test() {
+  "0o777"
+  |> tokenizer.tokenize_int(base: 8)
+  |> expect.to_equal([
+    BasePrefix(#(0, 2), "0o", 8),
+    Digit(#(2, 3), "7", 7),
+    Digit(#(3, 4), "7", 7),
+    Digit(#(4, 5), "7", 7),
+  ])
+}
+
+pub fn tokenize_int_with_base_16_and_hexadecimal_prefix_test() {
+  "0xABC"
+  |> tokenizer.tokenize_int(base: 16)
+  |> expect.to_equal([
+    BasePrefix(#(0, 2), "0x", 16),
     Digit(#(2, 3), "A", 10),
     Digit(#(3, 4), "B", 11),
     Digit(#(4, 5), "C", 12),
