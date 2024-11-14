@@ -39,6 +39,12 @@ const valid_simple: List(IntegerTestData) = [
     expected_python_output: Ok("-10"),
   ),
   IntegerTestData(
+    input: "01_32",
+    base: 4,
+    expected_program_output: Ok(30),
+    expected_python_output: Ok("30"),
+  ),
+  IntegerTestData(
     input: "+0",
     base: 10,
     expected_program_output: Ok(0),

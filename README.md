@@ -91,13 +91,23 @@ pub fn main() {
 
 ## [Rigorous Testing](https://github.com/JosephTLyons/lenient_parse/tree/main/test/data)
 
-`lenient_parse`'s testing is extensive. Each test input is also processed using
-Python's (3.13) `float()` and `int()` functions. We verify that `lenient_parse`
-produces the same output as Python. If Python's built-ins succeed,
-`lenient_parse` should also succeed with identical results. If Python's
-built-ins fail to parse, `lenient_parse` should also fail. This ensures that
-`lenient_parse` behaves consistently with Python's built-ins for all supplied
-test data.
+`lenient_parse`'s testing is extensive. We test the tokenization step, the
+overall parse procedure, as well as various intermediate layers. We currently
+have 460+ passing tests. Regressions are **not** welcome here.
+
+### Backed by Python
+
+Each test input is also processed using Python's (3.13) `float()` and `int()`
+functions. We verify that `lenient_parse` produces the same output as Python. If
+Python's built-ins succeed, `lenient_parse` should also succeed with identical
+results. If Python's built-ins fail to parse, `lenient_parse` should also fail.
+This ensures that `lenient_parse` behaves consistently with Python's built-ins
+for all supplied test data.
+
+If you run into a case where `lenient_parse` and Python's built-ins disagree,
+please open an [issue](https://github.com/JosephTLyons/lenient_parse/issues) -
+we aim to be 100% consistent with Python's built-ins and we will fix any
+reported discrepancies.
 
 ## Development
 
