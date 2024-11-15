@@ -2,8 +2,9 @@ import gleam/int
 import gleam/order
 import gleam/queue.{type Queue}
 import gleam/result
+import lenient_parse/internal/base_constants.{base_10}
 
-pub fn by_10(
+pub fn queues(
   whole_digits: Queue(Int),
   fractional_digits: Queue(Int),
   scale_factor: Int,
@@ -18,7 +19,7 @@ pub fn by_10(
 
       let whole_digits = whole_digits |> queue.push_back(fractional_digit)
 
-      by_10(whole_digits, fractional_digits, scale_factor - 1)
+      queues(whole_digits, fractional_digits, scale_factor - 1)
     }
     order.Lt -> {
       let #(whole_digit, whole_digits) =
@@ -28,7 +29,47 @@ pub fn by_10(
 
       let fractional_digits = fractional_digits |> queue.push_front(whole_digit)
 
-      by_10(whole_digits, fractional_digits, scale_factor + 1)
+      queues(whole_digits, fractional_digits, scale_factor + 1)
     }
+  }
+}
+
+pub fn float(factor: Float, exponent: Int) {
+  do_float(
+    factor: factor,
+    exponent: exponent,
+    scale_factor: 1,
+    exponent_is_positive: exponent >= 0,
+  )
+}
+
+fn do_float(
+  factor factor: Float,
+  exponent exponent: Int,
+  scale_factor scale_factor: Int,
+  exponent_is_positive exponent_is_positive: Bool,
+) -> Float {
+  case int.compare(exponent, 0) {
+    order.Eq -> {
+      let scale_factor_float = scale_factor |> int.to_float
+      case exponent_is_positive {
+        True -> factor *. scale_factor_float
+        False -> factor /. scale_factor_float
+      }
+    }
+    order.Gt ->
+      do_float(
+        factor,
+        exponent - 1,
+        scale_factor * base_10,
+        exponent_is_positive,
+      )
+    order.Lt ->
+      do_float(
+        factor,
+        exponent + 1,
+        scale_factor * base_10,
+        exponent_is_positive,
+      )
   }
 }
