@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.3.2 - 2024-11-15
+
+- Fixed precision errors in some float representations by removing the need to add together the integer and fractional parts of a float.
+
 ## v1.3.1 - 2024-11-11
 
 - Fixed a bug where an underscore was not allowed in between a base prefix string and the number: `0x_DEAD_BEEF` should parse.
