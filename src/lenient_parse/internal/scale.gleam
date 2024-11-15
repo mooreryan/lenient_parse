@@ -5,36 +5,36 @@ import gleam/result
 import lenient_parse/internal/base_constants.{base_10}
 
 pub fn queues(
-  whole_digits: Queue(Int),
-  fractional_digits: Queue(Int),
-  scale_factor: Int,
+  whole_digits whole_digits: Queue(Int),
+  fractional_digits fractional_digits: Queue(Int),
+  scale_factor scale_factor: Int,
 ) -> #(Queue(Int), Queue(Int)) {
   case int.compare(scale_factor, 0) {
     order.Eq -> #(whole_digits, fractional_digits)
     order.Gt -> {
-      let #(fractional_digit, fractional_digits) =
-        fractional_digits
-        |> queue.pop_front
+      let #(digit, fractional_digits) =
+        queue.pop_front(fractional_digits)
         |> result.unwrap(#(0, fractional_digits))
-
-      let whole_digits = whole_digits |> queue.push_back(fractional_digit)
-
-      queues(whole_digits, fractional_digits, scale_factor - 1)
+      queues(
+        queue.push_back(whole_digits, digit),
+        fractional_digits,
+        scale_factor - 1,
+      )
     }
     order.Lt -> {
-      let #(whole_digit, whole_digits) =
-        whole_digits
-        |> queue.pop_back
+      let #(digit, whole_digits) =
+        queue.pop_back(whole_digits)
         |> result.unwrap(#(0, whole_digits))
-
-      let fractional_digits = fractional_digits |> queue.push_front(whole_digit)
-
-      queues(whole_digits, fractional_digits, scale_factor + 1)
+      queues(
+        whole_digits,
+        queue.push_front(fractional_digits, digit),
+        scale_factor + 1,
+      )
     }
   }
 }
 
-pub fn float(factor: Float, exponent: Int) {
+pub fn float(factor: Float, exponent: Int) -> Float {
   do_float(
     factor: factor,
     exponent: exponent,
@@ -51,23 +51,19 @@ fn do_float(
 ) -> Float {
   case int.compare(exponent, 0) {
     order.Eq -> {
-      let scale_factor_float = scale_factor |> int.to_float
+      let scale_factor_float = int.to_float(scale_factor)
       case exponent_is_positive {
         True -> factor *. scale_factor_float
         False -> factor /. scale_factor_float
       }
     }
-    order.Gt ->
+    _ ->
       do_float(
         factor,
-        exponent - 1,
-        scale_factor * base_10,
-        exponent_is_positive,
-      )
-    order.Lt ->
-      do_float(
-        factor,
-        exponent + 1,
+        case exponent_is_positive {
+          True -> exponent - 1
+          False -> exponent + 1
+        },
         scale_factor * base_10,
         exponent_is_positive,
       )
