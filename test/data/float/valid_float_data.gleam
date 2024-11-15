@@ -7,18 +7,6 @@ const valid_simple: List(FloatTestData) = [
     expected_program_output: Ok(1.001),
     expected_python_output: Ok("1.001"),
   ),
-  // Would produce a floating point error in v1.3.1: 2.7119999999999997
-  FloatTestData(
-    input: "2.712",
-    expected_program_output: Ok(2.712),
-    expected_python_output: Ok("2.712"),
-  ),
-  // Would produce a floating point error in v1.3.1: 7.5776864147000005
-  FloatTestData(
-    input: "7.5776864147",
-    expected_program_output: Ok(7.5776864147),
-    expected_python_output: Ok("7.5776864147"),
-  ),
   FloatTestData(
     input: "1.00",
     expected_program_output: Ok(1.0),
@@ -225,6 +213,21 @@ const valid_exponent_symbol_position: List(FloatTestData) = [
   ),
 ]
 
+const precision_error: List(FloatTestData) = [
+  // Would produce a floating point error in v1.3.1: 2.7119999999999997
+  FloatTestData(
+    input: "2.712",
+    expected_program_output: Ok(2.712),
+    expected_python_output: Ok("2.712"),
+  ),
+  // Would produce a floating point error in v1.3.1: 7.5776864147000005
+  FloatTestData(
+    input: "7.5776864147",
+    expected_program_output: Ok(7.5776864147),
+    expected_python_output: Ok("7.5776864147"),
+  ),
+]
+
 const valid_mixed: List(FloatTestData) = [
   FloatTestData(
     input: "   -30.01e-2   ",
@@ -254,6 +257,7 @@ pub fn data() -> List(FloatTestData) {
     valid_underscore,
     valid_whitespace,
     valid_exponent_symbol_position,
+    precision_error,
     valid_mixed,
   ]
   |> list.flatten
