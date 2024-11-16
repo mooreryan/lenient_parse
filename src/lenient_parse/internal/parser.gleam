@@ -372,10 +372,12 @@ fn form_float(
   scaled_float_value *. -1.0
 }
 
-fn digits_to_int(digits digits: Queue(Int)) -> Int {
+@internal
+pub fn digits_to_int(digits digits: Queue(Int)) -> Int {
   digits_to_int_with_base(digits: digits, base: base_10)
 }
 
-fn digits_to_int_with_base(digits digits: Queue(Int), base base: Int) -> Int {
+@internal
+pub fn digits_to_int_with_base(digits digits: Queue(Int), base base: Int) -> Int {
   digits |> queue.to_list |> list.fold(0, fn(acc, digit) { acc * base + digit })
 }
