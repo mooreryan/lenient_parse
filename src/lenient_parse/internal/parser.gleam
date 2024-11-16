@@ -1,5 +1,4 @@
 import gleam/bool
-import gleam/int
 import gleam/list
 import gleam/option.{type Option, None, Some}
 import gleam/queue.{type Queue}
@@ -7,7 +6,8 @@ import gleam/result
 import lenient_parse/internal/base_constants.{
   base_0, base_10, base_16, base_2, base_8,
 }
-import lenient_parse/internal/scale
+import lenient_parse/internal/build
+import lenient_parse/internal/convert.{digits_to_int, digits_to_int_with_base}
 import lenient_parse/internal/token.{
   type Token, BasePrefix, DecimalPoint, Digit, ExponentSymbol, Sign, Underscore,
   Unknown, Whitespace,
@@ -101,7 +101,7 @@ pub fn parse_float(tokens tokens: List(Token)) -> Result(Float, ParseError) {
     None, True -> Error(EmptyString)
     Some(_), True -> Error(WhitespaceOnlyString)
     _, _ ->
-      Ok(form_float(
+      Ok(build.float_value(
         is_positive: is_positive,
         whole_digits: whole_digits,
         fractional_digits: fractional_digits,
@@ -350,34 +350,4 @@ fn do_parse_digits(
       Error(OutOfBaseRange(start_index, character, value, base))
     _ -> Ok(ParseData(data: acc, next_index: index, tokens: tokens))
   }
-}
-
-fn form_float(
-  is_positive is_positive: Bool,
-  whole_digits whole_digits: Queue(Int),
-  fractional_digits fractional_digits: Queue(Int),
-  exponent exponent: Int,
-) -> Float {
-  let #(whole_digits, fractional_digits) =
-    scale.queues(whole_digits, fractional_digits, exponent)
-  let fractional_digits_length = fractional_digits |> queue.length
-  let #(all_digits, _) =
-    scale.queues(whole_digits, fractional_digits, fractional_digits_length)
-  let scaled_float_value =
-    all_digits
-    |> digits_to_int
-    |> int.to_float
-    |> scale.float(-fractional_digits_length)
-  use <- bool.guard(is_positive, scaled_float_value)
-  scaled_float_value *. -1.0
-}
-
-@internal
-pub fn digits_to_int(digits digits: Queue(Int)) -> Int {
-  digits_to_int_with_base(digits: digits, base: base_10)
-}
-
-@internal
-pub fn digits_to_int_with_base(digits digits: Queue(Int), base base: Int) -> Int {
-  digits |> queue.to_list |> list.fold(0, fn(acc, digit) { acc * base + digit })
 }
