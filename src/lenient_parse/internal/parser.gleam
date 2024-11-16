@@ -105,7 +105,7 @@ pub fn parse_float(tokens tokens: List(Token)) -> Result(Float, ParseError) {
         is_positive: is_positive,
         whole_digits: whole_digits,
         fractional_digits: fractional_digits,
-        exponent: exponent,
+        scale_factor: exponent,
       ))
   }
 }

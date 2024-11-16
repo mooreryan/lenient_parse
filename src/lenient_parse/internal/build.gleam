@@ -8,10 +8,10 @@ pub fn float_value(
   is_positive is_positive: Bool,
   whole_digits whole_digits: Queue(Int),
   fractional_digits fractional_digits: Queue(Int),
-  exponent exponent: Int,
+  scale_factor scale_factor: Int,
 ) -> Float {
   let #(whole_digits, fractional_digits) =
-    scale.queues(whole_digits, fractional_digits, exponent)
+    scale.queues(whole_digits, fractional_digits, scale_factor)
   let fractional_digits_length = fractional_digits |> queue.length
   let #(all_digits, _) =
     scale.queues(whole_digits, fractional_digits, fractional_digits_length)
