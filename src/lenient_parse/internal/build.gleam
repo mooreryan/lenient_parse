@@ -4,8 +4,8 @@ import gleam/int
 import gleam/queue.{type Queue}
 import lenient_parse/internal/base_constants.{base_10}
 import lenient_parse/internal/convert
+import lenient_parse/internal/pilkku/pilkku
 import lenient_parse/internal/scale
-import pilkku
 
 pub fn float_value(
   is_positive is_positive: Bool,

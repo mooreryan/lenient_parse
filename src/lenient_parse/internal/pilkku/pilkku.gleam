@@ -43,7 +43,7 @@ import bigi.{type BigInt}
 import gleam/order
 import gleam/result
 import gleam/set.{type Set}
-import pilkku/context.{type Signal}
+import lenient_parse/internal/pilkku/context.{type Signal}
 
 const power_of_2_to_52 = 4_503_599_627_370_496
 
