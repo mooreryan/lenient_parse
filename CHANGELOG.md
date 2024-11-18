@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.3.3 - 2024-11-18
+
+- Fixed precision errors. We now rely on `bigi` and `pilkku` to construct the final float representation.
+
 ## v1.3.2 - 2024-11-15
 
 - Fixed precision errors in some float representations by removing the need to add together the integer and fractional parts of a float.
