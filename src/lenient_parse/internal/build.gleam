@@ -45,6 +45,7 @@ pub fn float_value(
       case decimal |> pilkku.to_float {
         Ok(float_value) if float_value == 0.0 && !is_positive -> Ok(-0.0)
         Ok(float_value) -> Ok(float_value)
+        // TODO: Add tests and return an error for this case
         Error(_) -> Error(Nil)
       }
     }
