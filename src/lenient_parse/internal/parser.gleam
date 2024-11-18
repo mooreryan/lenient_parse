@@ -22,7 +22,9 @@ type ParseData(t) {
   ParseData(data: t, next_index: Int, tokens: List(Token))
 }
 
-pub fn parse_float(tokens tokens: List(Token)) -> Result(Float, ParseError) {
+pub fn parse_float_tokens(
+  tokens tokens: List(Token),
+) -> Result(Float, ParseError) {
   let parse_data = parse_whitespace(tokens, 0)
   use ParseData(leading_whitespace, next_index, tokens) <- result.try(
     parse_data,
@@ -110,7 +112,7 @@ pub fn parse_float(tokens tokens: List(Token)) -> Result(Float, ParseError) {
   }
 }
 
-pub fn parse_int(
+pub fn parse_int_tokens(
   tokens tokens: List(Token),
   base base: Int,
 ) -> Result(Int, ParseError) {

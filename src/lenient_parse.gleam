@@ -8,7 +8,7 @@ import parse_error.{type ParseError, InvalidBaseValue}
 /// gleam's `float.parse()`. It behaves similarly to Python's `float()` built-in
 /// function.
 pub fn to_float(text text: String) -> Result(Float, ParseError) {
-  text |> tokenizer.tokenize_float |> parser.parse_float
+  text |> tokenizer.tokenize_float |> parser.parse_float_tokens
 }
 
 /// Converts a string to an integer using a more lenient parsing method than
@@ -30,5 +30,5 @@ pub fn to_int_with_base(
 
   text
   |> tokenizer.tokenize_int(base: base)
-  |> parser.parse_int(base: base)
+  |> parser.parse_int_tokens(base: base)
 }
