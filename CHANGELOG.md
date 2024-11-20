@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.3.4 - 2024-11-19
+
+- Fixed a bug where `lenient_parse` was rejecting strings containing leading / trailing uncommon whitespace characters.
+
 ## v1.3.3 - 2024-11-18
 
 - Fixed precision errors. We now rely on `bigi` and `pilkku` to construct the final float representation.
