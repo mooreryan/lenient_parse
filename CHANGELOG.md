@@ -1,6 +1,6 @@
 # Changelog
 
-## v1.3.5 - 2024-11-19
+## v1.3.5 - 2024-11-20
 
 - Fixed a bug where base prefix substrings would be recognized as such later in the string.
     - The `0b` in `0XDEAD_BEEF0b` should be catorgized as digits and not a base prefix.
