@@ -586,6 +586,17 @@ fn valid_whitespace() -> List(IntegerTestData) {
   ]
 }
 
+fn valid_mixed() -> List(IntegerTestData) {
+  [
+    IntegerTestData(
+      input: "  \n+1990_04_12",
+      base: base_0,
+      expected_program_output: Ok(19_900_412),
+      expected_python_output: Ok("19900412"),
+    ),
+  ]
+}
+
 pub fn data() -> List(IntegerTestData) {
   [
     valid_simple(),
@@ -595,6 +606,7 @@ pub fn data() -> List(IntegerTestData) {
     valid_underscore(),
     valid_whitespace(),
     valid_simple_base_prefix(),
+    valid_mixed(),
   ]
   |> list.flatten
 }
