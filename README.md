@@ -23,6 +23,7 @@ gleam add lenient_parse
 import gleam/float
 import gleam/int
 import gleam/io
+import gleam/list
 import lenient_parse
 
 pub fn main() {
