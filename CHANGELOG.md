@@ -2,10 +2,10 @@
 
 ## v2.0.0 - 2024-12-07
 
-- Handled values that exceed either the `Number.MIN_SAFE_INTEGER` and `Number.MAX_SAFE_INTEGER` limits on the JavaScript target.
+- Handled values that breach either the `Number.MIN_SAFE_INTEGER` or `Number.MAX_SAFE_INTEGER` limit on the JavaScript target.
 - Handled values that cannot fit within the float type, on both Erlang and JavaScript targets.
 
-This is a breaking change, as we introduced new errors to `ParseError`, which will affect users who are matching on the `ParseError` type.
+This is a breaking change, as we introduced new errors to `ParseError`, which will affect users who are matching on the `ParseError` type:
     - `OutOfIntRange`
     - `OutOfFloatRange`
 
