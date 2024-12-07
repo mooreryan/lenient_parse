@@ -6,7 +6,7 @@ import parse_error.{
   type ParseError, BasePrefixOnly, EmptyString, InvalidBaseValue,
   InvalidDecimalPosition, InvalidDigitPosition, InvalidExponentSymbolPosition,
   InvalidSignPosition, InvalidUnderscorePosition, OutOfBaseRange,
-  UnknownCharacter, WhitespaceOnlyString,
+  OutOfFloatRange, OutOfIntRange, UnknownCharacter, WhitespaceOnlyString,
 }
 
 pub fn to_printable_text(text: String) -> String {
@@ -84,5 +84,11 @@ pub fn error_to_string(error: ParseError) -> String {
       <> "\" at index: "
       <> index |> int.to_string
     InvalidBaseValue(base) -> "invalid base value: " <> base |> int.to_string
+    OutOfIntRange(integer_string) ->
+      "integer value \""
+      <> integer_string
+      <> "\" cannot safely be represented on the JavaScript target"
+    OutOfFloatRange(float_string) ->
+      "float value \"" <> float_string <> "\" cannot safely be represented"
   }
 }

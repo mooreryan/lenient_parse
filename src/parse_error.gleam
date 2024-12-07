@@ -68,4 +68,20 @@ pub type ParseError {
   /// - `base`: The invalid base as an `Int`. The base must be between 2 and 36
   /// inclusive.
   InvalidBaseValue(base: Int)
+
+  /// Represents an error when the parsed number is outside the safe integer
+  /// range when ran on the JavaScript target.
+  ///
+  /// - [MDN: Number.MAX_SAFE_INTEGER](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/MAX_SAFE_INTEGER)
+  /// - [MDN: Number.MIN_SAFE_INTEGER](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/MIN_SAFE_INTEGER)
+  ///
+  /// This also implies that numbers that parse to `Infinity` and `-Infinity`,
+  /// on the JavaScript target, will emit this error.
+  ///
+  /// Note that Erlang's max and min integer limits are not handled.
+  OutOfIntRange(integer_string: String)
+
+  /// Represents an error when the parsed number cannot be fit within the float
+  /// type.
+  OutOfFloatRange(float_string: String)
 }
