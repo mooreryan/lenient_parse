@@ -6,8 +6,9 @@
 - Handled values that cannot fit within the float type, on both Erlang and JavaScript targets.
 
 This is a breaking change, as we introduced new errors to `ParseError`, which will affect users who are matching on the `ParseError` type:
-    - `OutOfIntRange`
-    - `OutOfFloatRange`
+
+- `OutOfIntRange`
+- `OutOfFloatRange`
 
 ## v1.3.5 - 2024-11-20
 
