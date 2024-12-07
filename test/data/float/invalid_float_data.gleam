@@ -24,8 +24,8 @@ fn float_test_data(
   let printable_text = input |> helpers.to_printable_text
 
   FloatTestData(
-    input: input,
-    expected_program_output: expected_program_output,
+    input:,
+    expected_program_output:,
     expected_python_output: Error(python_error_function(printable_text)),
   )
 }

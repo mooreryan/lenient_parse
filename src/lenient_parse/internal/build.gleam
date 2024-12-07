@@ -37,8 +37,8 @@ pub fn float_value(
 
       let decimal =
         pilkku.new_bigint(
-          sign: sign,
-          coefficient: coefficient,
+          sign:,
+          coefficient:,
           exponent: bigi.from_int(-exponent),
         )
 

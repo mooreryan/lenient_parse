@@ -104,9 +104,9 @@ pub fn parse_float_tokens(
     Some(_), True -> Error(WhitespaceOnlyString)
     _, _ ->
       Ok(build.float_value(
-        is_positive: is_positive,
-        whole_digits: whole_digits,
-        fractional_digits: fractional_digits,
+        is_positive:,
+        whole_digits:,
+        fractional_digits:,
         scale_factor: exponent,
       ))
   }
@@ -173,7 +173,7 @@ pub fn parse_int_tokens(
       Error(BasePrefixOnly(index_range, prefix))
     Some(_), _, True -> Error(WhitespaceOnlyString)
     _, _, _ -> {
-      let value = digits |> digits_to_int_with_base(base: base)
+      let value = digits |> digits_to_int_with_base(base:)
       let value = case is_positive {
         True -> value
         False -> -value
@@ -187,7 +187,7 @@ fn parse_whitespace(
   tokens tokens: List(Token),
   index index: Int,
 ) -> Result(ParseData(Option(String)), ParseError) {
-  do_parse_whitespace(tokens: tokens, index: index, acc: "")
+  do_parse_whitespace(tokens:, index:, acc: "")
 }
 
 fn do_parse_whitespace(
@@ -210,7 +210,7 @@ fn do_parse_whitespace(
         _ -> Some(acc)
       }
 
-      Ok(ParseData(data: data, next_index: index, tokens: tokens))
+      Ok(ParseData(data:, next_index: index, tokens:))
     }
   }
 }
@@ -224,7 +224,7 @@ fn parse_sign(
     [Sign(index, _, is_positive), ..rest] ->
       Ok(ParseData(data: is_positive, next_index: index + 1, tokens: rest))
     _ -> {
-      Ok(ParseData(data: True, next_index: index, tokens: tokens))
+      Ok(ParseData(data: True, next_index: index, tokens:))
     }
   }
 }
@@ -243,40 +243,22 @@ fn parse_base_prefix(
         Ok(Digit(_, specifier, _))
           if { base == base_0 || base == base_2 }
           && { specifier == "b" || specifier == "B" }
-        ->
-          Ok(base_prefix_data(
-            tokens: rest,
-            index: index,
-            specifier: specifier,
-            base: base_2,
-          ))
+        -> Ok(base_prefix_data(tokens: rest, index:, specifier:, base: base_2))
         Ok(Digit(_, specifier, _))
           if { base == base_0 || base == base_8 }
           && { specifier == "o" || specifier == "O" }
-        ->
-          Ok(base_prefix_data(
-            tokens: rest,
-            index: index,
-            specifier: specifier,
-            base: base_8,
-          ))
+        -> Ok(base_prefix_data(tokens: rest, index:, specifier:, base: base_8))
         Ok(Digit(_, specifier, _))
           if { base == base_0 || base == base_16 }
           && { specifier == "x" || specifier == "X" }
-        ->
-          Ok(base_prefix_data(
-            tokens: rest,
-            index: index,
-            specifier: specifier,
-            base: base_16,
-          ))
+        -> Ok(base_prefix_data(tokens: rest, index:, specifier:, base: base_16))
         Ok(Digit(index, character, _)) if base == base_0 -> {
           Error(UnknownCharacter(index, character))
         }
-        _ -> Ok(ParseData(data: None, next_index: index, tokens: tokens))
+        _ -> Ok(ParseData(data: None, next_index: index, tokens:))
       }
     }
-    _ -> Ok(ParseData(data: None, next_index: index, tokens: tokens))
+    _ -> Ok(ParseData(data: None, next_index: index, tokens:))
   }
 }
 
@@ -301,7 +283,7 @@ fn parse_decimal_point(
     [Unknown(index, character), ..] -> Error(UnknownCharacter(index, character))
     [DecimalPoint(index), ..rest] ->
       Ok(ParseData(data: True, next_index: index + 1, tokens: rest))
-    _ -> Ok(ParseData(data: False, next_index: index, tokens: tokens))
+    _ -> Ok(ParseData(data: False, next_index: index, tokens:))
   }
 }
 
@@ -317,7 +299,7 @@ fn parse_exponent_symbol(
         next_index: index + 1,
         tokens: rest,
       ))
-    _ -> Ok(ParseData(data: None, next_index: index, tokens: tokens))
+    _ -> Ok(ParseData(data: None, next_index: index, tokens:))
   }
 }
 
@@ -328,12 +310,12 @@ fn parse_digits(
   has_base_prefix has_base_prefix: Bool,
 ) -> Result(ParseData(Deque(Int)), ParseError) {
   do_parse_digits(
-    tokens: tokens,
-    index: index,
-    base: base,
+    tokens:,
+    index:,
+    base:,
     acc: deque.new(),
     at_beginning: True,
-    has_base_prefix: has_base_prefix,
+    has_base_prefix:,
   )
 }
 
@@ -373,10 +355,10 @@ fn do_parse_digits(
       do_parse_digits(
         tokens: rest,
         index: index + 1,
-        base: base,
-        acc: acc,
+        base:,
+        acc:,
         at_beginning: False,
-        has_base_prefix: has_base_prefix,
+        has_base_prefix:,
       )
     }
     [Digit(index, character, _), ..] if base == base_0 -> {
@@ -385,15 +367,15 @@ fn do_parse_digits(
     [Digit(index, _, value), ..rest] if value < base -> {
       do_parse_digits(
         tokens: rest,
-        index: index,
-        base: base,
+        index:,
+        base:,
         acc: acc |> deque.push_back(value),
         at_beginning: False,
-        has_base_prefix: has_base_prefix,
+        has_base_prefix:,
       )
     }
     [Digit(index, character, value), ..] ->
       Error(OutOfBaseRange(index, character, value, base))
-    _ -> Ok(ParseData(data: acc, next_index: index, tokens: tokens))
+    _ -> Ok(ParseData(data: acc, next_index: index, tokens:))
   }
 }

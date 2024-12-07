@@ -39,9 +39,9 @@ fn integer_test_data(
   let printable_text = input |> helpers.to_printable_text
 
   IntegerTestData(
-    input: input,
-    base: base,
-    expected_program_output: expected_program_output,
+    input:,
+    base:,
+    expected_program_output:,
     expected_python_output: Error(python_error_function(printable_text, base)),
   )
 }

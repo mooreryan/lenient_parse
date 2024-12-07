@@ -37,8 +37,8 @@ fn do_tokenize_float(
         _ ->
           common_token(
             character: first,
-            index: index,
-            whitespace_character_dict: whitespace_character_dict,
+            index:,
+            whitespace_character_dict:,
             tokenize_character_as_digit: fn(digit_value) {
               digit_value < base_10
             },
@@ -47,7 +47,7 @@ fn do_tokenize_float(
       do_tokenize_float(
         characters: rest,
         index: index + 1,
-        whitespace_character_dict: whitespace_character_dict,
+        whitespace_character_dict:,
         acc: [token, ..acc],
       )
     }
@@ -79,15 +79,15 @@ fn do_tokenize_int(
       let token =
         common_token(
           character: first,
-          index: index,
+          index:,
           tokenize_character_as_digit: fn(_) { True },
-          whitespace_character_dict: whitespace_character_dict,
+          whitespace_character_dict:,
         )
 
       do_tokenize_int(
         characters: rest,
         index: index + 1,
-        whitespace_character_dict: whitespace_character_dict,
+        whitespace_character_dict:,
         acc: [token, ..acc],
       )
     }

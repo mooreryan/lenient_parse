@@ -87,12 +87,7 @@ pub fn new_bigint(
     _ -> bigi.from_int(1)
   }
 
-  Decimal(
-    sign: sign,
-    coefficient: coefficient,
-    exponent: exponent,
-    flags: set.new(),
-  )
+  Decimal(sign:, coefficient:, exponent:, flags: set.new())
 }
 
 /// Cast the decimal into a float.

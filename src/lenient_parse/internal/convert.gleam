@@ -3,7 +3,7 @@ import gleam/list
 import lenient_parse/internal/base_constants.{base_10}
 
 pub fn digits_to_int(digits digits: Deque(Int)) -> Int {
-  digits_to_int_with_base(digits: digits, base: base_10)
+  digits_to_int_with_base(digits:, base: base_10)
 }
 
 pub fn digits_to_int_with_base(digits digits: Deque(Int), base base: Int) -> Int {

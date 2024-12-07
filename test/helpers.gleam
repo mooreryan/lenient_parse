@@ -35,7 +35,7 @@ fn do_to_printable_text(
 
       do_to_printable_text(
         characters: rest,
-        whitespace_character_dict: whitespace_character_dict,
+        whitespace_character_dict:,
         acc: acc <> printable,
       )
     }

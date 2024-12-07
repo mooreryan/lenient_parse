@@ -36,8 +36,8 @@ pub fn deques(
 
 pub fn float(factor: Float, exponent: Int) -> Float {
   do_float(
-    factor: factor,
-    exponent: exponent,
+    factor:,
+    exponent:,
     scale_factor: 1,
     exponent_is_positive: exponent >= 0,
   )
