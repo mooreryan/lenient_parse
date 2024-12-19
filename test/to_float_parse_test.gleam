@@ -1,8 +1,11 @@
 import data
 import gleam/float
+import gleam/io
 import gleam/list
 import helpers
 import lenient_parse
+import parse_error
+import python_floatvalue_grammar
 import startest.{describe, it}
 import startest/expect
 
@@ -39,4 +42,20 @@ pub fn to_float_tests() {
         |> expect.to_equal(expected_program_output)
       }),
   )
+}
+
+import qcheck
+
+pub fn small_positive_or_zero_int__test() {
+  let config = qcheck.default_config() |> qcheck.with_test_count(100)
+  use float_string <- qcheck.run_result(
+    config,
+    python_floatvalue_grammar.finite_floatvalue_in_whitespace(),
+  )
+  io.debug(float_string)
+  case lenient_parse.to_float(float_string) {
+    Ok(x) -> Ok(x)
+    Error(parse_error.OutOfFloatRange(_)) -> Ok(0.0)
+    Error(error) -> Error(error)
+  }
 }
