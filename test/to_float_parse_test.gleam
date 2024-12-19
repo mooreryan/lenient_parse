@@ -6,6 +6,7 @@ import helpers
 import lenient_parse
 import parse_error
 import python_floatvalue_grammar
+import qcheck
 import startest.{describe, it}
 import startest/expect
 
@@ -44,15 +45,13 @@ pub fn to_float_tests() {
   )
 }
 
-import qcheck
-
-pub fn small_positive_or_zero_int__test() {
+pub fn float_strings_generated_from_grammer_parse_ok__test() {
   let config = qcheck.default_config() |> qcheck.with_test_count(100)
   use float_string <- qcheck.run_result(
     config,
     python_floatvalue_grammar.finite_floatvalue_in_whitespace(),
   )
-  io.debug(float_string)
+  // io.debug(float_string)
   case lenient_parse.to_float(float_string) {
     Ok(x) -> Ok(x)
     Error(parse_error.OutOfFloatRange(_)) -> Ok(0.0)
